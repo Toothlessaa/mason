@@ -37,7 +37,7 @@ export function Hero() {
               animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             >
-              <p className="hero-eyebrow">ANCIENT • HONORABLE • UNIVERSAL</p>
+              <p className="hero-eyebrow">Ancient &amp; Accepted Scottish Rite</p>
               <span className="hero-kicker">Welcome to a lodge where tradition meets service and leadership.</span>
               <h1>
                 <span>BROTHERHOOD</span>

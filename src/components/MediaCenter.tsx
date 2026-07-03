@@ -5,7 +5,7 @@ import firstPhoto from "../../fir.jpg";
 import fellowshipPhoto from "../../fellow2.jpg";
 import brotherhoodPhoto from "../../brotherhood.jpg";
 import milestonePhoto from "../../milestone.jpg";
-import secondPhoto from "../../sec.jpg";
+import secondPhoto from "../../s.jpg";
 import communityPhoto from "../../community.png";
 import charityPhoto from "../../charity.jpg";
 

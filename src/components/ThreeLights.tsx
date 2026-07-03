@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, User } from "lucide-react";
-import noelPhoto from "../../noel.png";
+import worshipfulMasterPhoto from "../../worshipful.jpg";
+import seniorWardenPhoto from "../../srward.jpg";
+import juniorWardenPhoto from "../../jrward.jpg";
 
 const officers = [
-  { name: "Noel J Blanco I", title: "Worshipful Master", photo: noelPhoto },
-  { name: "Senior Warden", title: "Senior Warden", photo: undefined },
-  { name: "Junior Warden", title: "Junior Warden", photo: undefined },
+  { name: "Worshipful Master", title: "Worshipful Master", photo: worshipfulMasterPhoto },
+  { name: "Senior Warden", title: "Senior Warden", photo: seniorWardenPhoto },
+  { name: "Junior Warden", title: "Junior Warden", photo: juniorWardenPhoto },
 ];
 
 const lodgeName = "Mt. Capistrano Masonic Lodge No. 23";

@@ -37,6 +37,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 12% 18%, rgba(61, 117, 255, 0.2), transparent 24%),
     radial-gradient(circle at 88% 18%, rgba(200, 162, 74, 0.18), transparent 28%),
@@ -353,12 +354,22 @@ select {
   text-transform: uppercase;
 }
 
+.hero-eyebrow {
+  color: #dc143c;
+  font-size: clamp(0.92rem, 1vw, 1.05rem);
+  text-transform: none;
+}
+
 .hero-eyebrow::after,
 .section-label::after {
   width: 84px;
   height: 1px;
   background: linear-gradient(90deg, rgba(226, 196, 122, 0.95), transparent);
   content: "";
+}
+
+.hero-eyebrow::after {
+  background: linear-gradient(90deg, rgba(220, 20, 60, 0.95), transparent);
 }
 
 .hero-kicker {
@@ -462,6 +473,7 @@ select {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  text-align: center;
 }
 
 .gold-button-solid {
@@ -1586,7 +1598,13 @@ select {
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.045);
   color: rgba(247, 248, 251, 0.86);
+  min-width: 0;
   transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
+}
+
+.footer-contact-card span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .footer-contact-card svg {
@@ -2175,6 +2193,7 @@ a.footer-contact-card:focus-visible {
   .site-header-inner {
     min-height: 68px;
     padding: 0 18px;
+    gap: 12px;
   }
 
   .brand-logo-image,
@@ -2199,6 +2218,11 @@ a.footer-contact-card:focus-visible {
     padding-top: 20px;
   }
 
+  .hero-section {
+    min-height: auto;
+    align-items: flex-start;
+  }
+
   .hero-layout {
     min-height: auto;
     gap: 18px;
@@ -2206,6 +2230,7 @@ a.footer-contact-card:focus-visible {
 
   .hero-copy h1 {
     font-size: clamp(3.4rem, 14vw, 5rem);
+    line-height: 0.96;
   }
 
   .hero-kicker {
@@ -2218,7 +2243,7 @@ a.footer-contact-card:focus-visible {
   }
 
   .portrait-stage {
-    min-height: 580px;
+    min-height: clamp(420px, 64vw, 580px);
   }
 
   .portrait-figure {
@@ -2241,6 +2266,10 @@ a.footer-contact-card:focus-visible {
   .feature-bar,
   .overview-grid {
     grid-template-columns: 1fr;
+  }
+
+  .overview-card {
+    min-height: 0;
   }
 
   .feature-bar {
@@ -2307,11 +2336,35 @@ a.footer-contact-card:focus-visible {
     border-bottom: 0;
 
   }
+
+  .footer-cta-row {
+    align-items: stretch;
+  }
 }
 
 @media (max-width: 640px) {
+  .site-header {
+    padding-top: 10px;
+  }
+
+  .site-header-inner {
+    min-height: 62px;
+    border-radius: 18px;
+    padding: 0 12px;
+  }
+
   .brand {
-    gap: 12px;
+    gap: 10px;
+  }
+
+  .brand-logo-stack {
+    gap: 6px;
+  }
+
+  .brand-logo-image,
+  .brand-logo-fallback {
+    width: 42px;
+    height: 42px;
   }
 
   .brand-copy span {
@@ -2320,6 +2373,8 @@ a.footer-contact-card:focus-visible {
 
   .brand-copy strong {
     white-space: normal;
+    font-size: 0.82rem;
+    line-height: 1.12;
   }
 
   .brand-copy small {
@@ -2327,7 +2382,24 @@ a.footer-contact-card:focus-visible {
   }
 
   .hero-section {
-    padding-bottom: 20px;
+    padding: 10px 12px 20px;
+  }
+
+  .hero-shell,
+  .overview-section,
+  .faq-section,
+  .anthem-section,
+  .gm-message-section,
+  .three-lights-section,
+  .media-center-section,
+  .site-footer,
+  .section-breaker,
+  .mobile-menu {
+    width: calc(100vw - 24px);
+  }
+
+  .hero-copy {
+    text-align: left;
   }
 
   .hero-eyebrow,
@@ -2344,6 +2416,8 @@ a.footer-contact-card:focus-visible {
 
   .hero-copy h1 {
     font-size: clamp(2.75rem, 16vw, 4rem);
+    word-break: normal;
+    overflow-wrap: anywhere;
   }
 
   .hero-body {
@@ -2362,12 +2436,17 @@ a.footer-contact-card:focus-visible {
   }
 
   .portrait-stage {
-    min-height: 540px;
+    min-height: clamp(360px, 110vw, 500px);
   }
 
   .portrait-halo {
-    width: 320px;
-    height: 320px;
+    width: min(320px, 86vw);
+    height: min(320px, 86vw);
+  }
+
+  .portrait-spotlight {
+    width: min(300px, 82vw);
+    height: min(300px, 82vw);
   }
 
   .portrait-figure {
@@ -2381,11 +2460,21 @@ a.footer-contact-card:focus-visible {
 
   .grandmaster-card {
     width: calc(100vw - 52px);
-    padding: 20px;
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .grandmaster-card-name strong {
+    font-size: 1.35rem;
   }
 
   .overview-section {
     padding-bottom: 72px;
+  }
+
+  .overview-card {
+    padding: 20px;
+    border-radius: 20px;
   }
 
   .anthem-section {
@@ -2415,12 +2504,12 @@ a.footer-contact-card:focus-visible {
   }
 
   .tl-track {
-    height: 400px;
+    height: 390px;
   }
 
   .tl-card {
-    width: calc(100vw - 72px);
-    height: 420px;
+    width: calc(100vw - 80px);
+    height: 390px;
   }
 
   .tl-card-foot {
@@ -2563,6 +2652,172 @@ a.footer-contact-card:focus-visible {
 
   .footer-bottom {
     padding: 18px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-header,
+  .hero-section {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .site-header-inner,
+  .hero-shell,
+  .overview-section,
+  .faq-section,
+  .anthem-section,
+  .gm-message-section,
+  .three-lights-section,
+  .media-center-section,
+  .site-footer,
+  .section-breaker,
+  .mobile-menu {
+    width: calc(100vw - 16px);
+  }
+
+  .brand-logo-image,
+  .brand-logo-fallback {
+    width: 36px;
+    height: 36px;
+  }
+
+  .brand-copy strong {
+    max-width: 138px;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+  }
+
+  .menu-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .mobile-menu {
+    padding: 14px 16px;
+  }
+
+  .hero-eyebrow,
+  .section-label {
+    max-width: 100%;
+    letter-spacing: 0.14em;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(2.35rem, 15vw, 3.35rem);
+  }
+
+  .hero-kicker,
+  .hero-body,
+  .overview-heading p:last-child,
+  .three-lights-heading p:last-child,
+  .media-center-heading p:last-child,
+  .gm-message-text blockquote,
+  .footer-brand-block p:last-child,
+  .inquiry-intro {
+    font-size: 0.94rem;
+    line-height: 1.6;
+  }
+
+  .portrait-stage {
+    min-height: 340px;
+  }
+
+  .grandmaster-card {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    margin-top: -34px;
+    transform: none;
+  }
+
+  .feature-card {
+    grid-template-columns: 38px 1fr;
+    padding: 14px;
+  }
+
+  .feature-card-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .overview-heading h2,
+  .three-lights-heading h2,
+  .media-center-heading h2,
+  .gm-message-text h2,
+  .footer-brand-block h2,
+  .inquiry-form-panel h1,
+  .thank-you-copy h1 {
+    font-size: clamp(1.85rem, 10vw, 2.65rem);
+  }
+
+  .anthem-video {
+    aspect-ratio: 4 / 3;
+  }
+
+  .tl-carousel {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+  }
+
+  .tl-track {
+    height: 350px;
+    overflow: hidden;
+  }
+
+  .tl-card {
+    width: min(230px, calc(100vw - 112px));
+    height: 340px;
+  }
+
+  .tl-card-name {
+    font-size: 0.98rem;
+  }
+
+  .tl-card-role {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+  }
+
+  .media-card-featured,
+  .media-card-highlight,
+  .media-card-grid {
+    min-height: 300px;
+  }
+
+  .media-filter-bar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .media-filter-button {
+    width: 100%;
+    padding: 0 10px;
+    letter-spacing: 0.1em;
+  }
+
+  .footer-contact-card,
+  .inquiry-submit,
+  .footer-freemason-card,
+  .gold-button {
+    min-height: 48px;
+  }
+
+  .inquiry-shell,
+  .thank-you-shell {
+    width: calc(100vw - 16px);
+  }
+
+  .inquiry-page,
+  .thank-you-page {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .thank-you-image-card,
+  .inquiry-side-panel {
+    min-height: 320px;
   }
 }
 
