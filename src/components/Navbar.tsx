@@ -97,7 +97,7 @@ export function Navbar() {
               <span>MT. CAPISTRANO</span>
               <strong>MASONIC LODGE NO. 23</strong>
             </p>
-            <small>Valley of Bukidnon • Philippine Islands</small>
+            <small>Valley of Bukidnon</small>
           </div>
         </a>
 

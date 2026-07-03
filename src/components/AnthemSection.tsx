@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import anthemVideo from "../assets/anthem.MOV";
+import anthemVideo from "../../movie-anthem.mp4";
 
 export function AnthemSection() {
   const reduceMotion = useReducedMotion();

@@ -356,7 +356,7 @@ select {
 
 .hero-eyebrow {
   color: #dc143c;
-  font-size: clamp(0.92rem, 1vw, 1.05rem);
+  font-size: clamp(1.18rem, 1.65vw, 1.55rem);
   text-transform: none;
 }
 
