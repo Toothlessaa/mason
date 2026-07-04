@@ -86,7 +86,7 @@ export function BeAFreemasonPage() {
             <div className="inquiry-side-icon">
               <Compass size={34} strokeWidth={1.3} />
             </div>
-            <p>Ask one to be one.</p>
+            <p>To be one ask one.</p>
             <h2>A sincere inquiry begins with character.</h2>
             <p>
               Freemasonry is a lifelong pursuit of light, brotherhood, relief, and truth. Take the first step with sincerity and patience.

@@ -1,13 +1,27 @@
 import { useState } from "react";
 import { ArrowLeft, Compass, Send, X } from "lucide-react";
 import lodgeLogo from "../../logo1.jpg";
+import sidePhoto from "../../side.png";
 
 export function MobileBeAFreemasonPage() {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <section className="md-form-page">
+    <section className="md-form-page md-freemason-page">
       <a className="md-back-link" href="/thank-you"><ArrowLeft size={17} /> Thank You</a>
+
+      <aside className="md-freemason-hero">
+        <img src={sidePhoto} alt="A symbolic image for becoming a Freemason" />
+        <div className="md-freemason-hero-copy">
+          <span>To be one ask one.</span>
+          <h2>A sincere inquiry begins with character.</h2>
+          <p>Freemasonry is a lifelong pursuit of light, brotherhood, relief, and truth. Take the first step with sincerity and patience.</p>
+        </div>
+        <div className="md-freemason-compass">
+          <Compass size={28} strokeWidth={1.3} />
+        </div>
+      </aside>
+
       <div className="md-form-card">
         <img src={lodgeLogo} alt="Mt. Capistrano Masonic Lodge No. 23" />
         <p className="md-section-label">Membership Path</p>
