@@ -105,61 +105,61 @@ export function AdminPage() {
             ) : members.length === 0 ? (
               <p style={{ padding: "24px", textAlign: "center", color: "rgba(217,224,237,0.6)" }}>No members found.</p>
             ) : (
-              <table className="members-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Phone</th>
-                    <th>Address</th>
-                    <th>Freemason Info</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {members.map((member) => (
-                    <tr key={member.id}>
-                      <td>{member.name}</td>
-                      <td>{member.email}</td>
-                      <td>{member.role}</td>
-                      <td>{member.phone || "—"}</td>
-                      <td>{member.address || "—"}</td>
-                      <td>{member.is_freemason || "—"}</td>
-                      <td>
-                        <span className={`members-status members-status-${member.status.toLowerCase()}`}>
-                          {member.status}
-                        </span>
-                      </td>
-                      <td>
-                        {member.status === "Pending" ? (
-                          <div style={{ display: "flex", gap: "8px" }}>
-                            <button
-                              type="button"
-                              className="members-action-link"
-                              style={{ background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", color: "#22c55e", cursor: "pointer", padding: "6px 12px", borderRadius: "6px" }}
-                              onClick={() => handleApprove(member.id)}
-                            >
-                              <Check size={15} /> Confirm
-                            </button>
-                            <button
-                              type="button"
-                              className="members-action-link"
-                              style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", color: "#ef4444", cursor: "pointer", padding: "6px 12px", borderRadius: "6px" }}
-                              onClick={() => handleReject(member.id)}
-                            >
-                              <X size={15} /> Reject
-                            </button>
-                          </div>
-                        ) : (
-                          <span style={{ color: "rgba(217,224,237,0.5)", fontSize: "0.85rem" }}>—</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="admin-member-list">
+                {members.map((member) => (
+                  <article className="admin-member-card" key={member.id}>
+                    <div className="admin-member-grid">
+                      <div className="admin-member-field">
+                        <span>Name</span>
+                        <strong>{member.name}</strong>
+                      </div>
+                      <div className="admin-member-field">
+                        <span>Email</span>
+                        <strong>{member.email}</strong>
+                      </div>
+                      <div className="admin-member-field">
+                        <span>Role</span>
+                        <strong>{member.role}</strong>
+                      </div>
+                      <div className="admin-member-field">
+                        <span>Phone</span>
+                        <strong>{member.phone || "—"}</strong>
+                      </div>
+                      <div className="admin-member-field">
+                        <span>Address</span>
+                        <strong>{member.address || "—"}</strong>
+                      </div>
+                      <div className="admin-member-field">
+                        <span>Freemason Info</span>
+                        <strong>{member.is_freemason || "—"}</strong>
+                      </div>
+                      <div className="admin-member-field">
+                        <span>Status</span>
+                        <strong>
+                          <span className={`members-status members-status-${member.status.toLowerCase()}`}>
+                            {member.status}
+                          </span>
+                        </strong>
+                      </div>
+                    </div>
+
+                    <div className="admin-member-actions">
+                      {member.status === "Pending" ? (
+                        <>
+                          <button type="button" className="admin-confirm-button" onClick={() => handleApprove(member.id)}>
+                            <Check size={16} /> Confirm
+                          </button>
+                          <button type="button" className="admin-reject-button" onClick={() => handleReject(member.id)}>
+                            <X size={16} /> Reject
+                          </button>
+                        </>
+                      ) : (
+                        <span className="admin-no-action">No action needed</span>
+                      )}
+                    </div>
+                  </article>
+                ))}
+              </div>
             )}
           </div>
         </div>

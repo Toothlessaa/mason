@@ -88,36 +88,46 @@ export function MembersPage() {
             ) : members.length === 0 ? (
               <p style={{ padding: "24px", textAlign: "center", color: "rgba(217,224,237,0.6)" }}>No members found.</p>
             ) : (
-              <table className="members-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Title / Role</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Address</th>
-                    <th>Member Since</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {members.map((member) => (
-                    <tr key={member.id}>
-                      <td>{member.name}</td>
-                      <td>{member.role}</td>
-                      <td>{member.email}</td>
-                      <td>{member.phone || "—"}</td>
-                      <td>{member.address || "—"}</td>
-                      <td>{member.member_since || "—"}</td>
-                      <td>
-                        <span className={`members-status members-status-${member.status.toLowerCase()}`}>
-                          {member.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="member-directory-list">
+                {members.map((member) => (
+                  <article className="member-directory-card" key={member.id}>
+                    <div className="member-directory-grid">
+                      <div className="member-directory-field">
+                        <span>Name</span>
+                        <strong>{member.name}</strong>
+                      </div>
+                      <div className="member-directory-field">
+                        <span>Title / Role</span>
+                        <strong>{member.role}</strong>
+                      </div>
+                      <div className="member-directory-field">
+                        <span>Email</span>
+                        <strong>{member.email}</strong>
+                      </div>
+                      <div className="member-directory-field">
+                        <span>Phone</span>
+                        <strong>{member.phone || "—"}</strong>
+                      </div>
+                      <div className="member-directory-field">
+                        <span>Address</span>
+                        <strong>{member.address || "—"}</strong>
+                      </div>
+                      <div className="member-directory-field">
+                        <span>Member Since</span>
+                        <strong>{member.member_since || "—"}</strong>
+                      </div>
+                      <div className="member-directory-field">
+                        <span>Status</span>
+                        <strong>
+                          <span className={`members-status members-status-${member.status.toLowerCase()}`}>
+                            {member.status}
+                          </span>
+                        </strong>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
             )}
           </div>
         </div>

@@ -2610,6 +2610,166 @@ a.footer-contact-card:focus-visible {
   width: 100%;
 }
 
+.admin-member-list {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.admin-member-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid rgba(226, 196, 122, 0.1);
+  border-radius: 18px;
+  background: rgba(4, 13, 28, 0.38);
+}
+
+.admin-member-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 16px 22px;
+}
+
+.admin-member-field {
+  min-width: 0;
+}
+
+.admin-member-field span {
+  display: block;
+  margin-bottom: 6px;
+  color: rgba(226, 196, 122, 0.62);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.admin-member-field strong {
+  display: block;
+  color: rgba(217, 224, 237, 0.86);
+  font-size: 0.98rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.admin-member-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.admin-confirm-button,
+.admin-reject-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 104px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-confirm-button {
+  border: 1px solid rgba(34, 197, 94, 0.32);
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.admin-reject-button {
+  border: 1px solid rgba(239, 68, 68, 0.32);
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.admin-no-action {
+  color: rgba(217, 224, 237, 0.5);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 1100px) {
+  .admin-member-card {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-member-actions {
+    justify-content: flex-start;
+  }
+
+  .admin-member-grid {
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-member-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-member-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.member-directory-list {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.member-directory-card {
+  padding: 18px;
+  border: 1px solid rgba(226, 196, 122, 0.1);
+  border-radius: 18px;
+  background: rgba(4, 13, 28, 0.38);
+}
+
+.member-directory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 16px 22px;
+}
+
+.member-directory-field {
+  min-width: 0;
+}
+
+.member-directory-field span {
+  display: block;
+  margin-bottom: 6px;
+  color: rgba(226, 196, 122, 0.62);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.member-directory-field strong {
+  display: block;
+  color: rgba(217, 224, 237, 0.86);
+  font-size: 0.98rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1100px) {
+  .member-directory-grid {
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .member-directory-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .members-table {
   width: 100%;
   border-collapse: collapse;
