@@ -1,4 +1,5 @@
 import { Hero } from "./components/Hero";
+import { BeAFreemasonPage } from "./components/BeAFreemasonPage";
 import { BecomeMemberPage } from "./components/BecomeMemberPage";
 import { MembershipInquiryPage } from "./components/MembershipInquiryPage";
 import { Navbar } from "./components/Navbar";
@@ -9,7 +10,8 @@ import { useResponsiveMode } from "./hooks/useResponsiveMode";
 export default function App() {
   const { isMobileDesign } = useResponsiveMode();
   const isBecomeMemberPage = window.location.pathname === "/become-a-member";
-  const isInquiryPage = window.location.pathname === "/membership-enquiry" || window.location.pathname === "/be-a-freemason";
+  const isMembershipEnquiryPage = window.location.pathname === "/membership-enquiry";
+  const isBeAFreemasonPage = window.location.pathname === "/be-a-freemason";
   const isThankYouPage = window.location.pathname === "/thank-you";
 
   if (isMobileDesign) {
@@ -18,9 +20,9 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      {!isThankYouPage ? <Navbar /> : null}
+      {!isThankYouPage && !isBeAFreemasonPage ? <Navbar /> : null}
       <main>
-        {isBecomeMemberPage ? <BecomeMemberPage /> : isInquiryPage ? <MembershipInquiryPage /> : isThankYouPage ? <ThankYouPage /> : <Hero />}
+        {isBecomeMemberPage ? <BecomeMemberPage /> : isMembershipEnquiryPage ? <MembershipInquiryPage /> : isBeAFreemasonPage ? <BeAFreemasonPage /> : isThankYouPage ? <ThankYouPage /> : <Hero />}
       </main>
     </div>
   );

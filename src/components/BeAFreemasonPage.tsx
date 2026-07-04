@@ -3,29 +3,33 @@ import { ArrowLeft, Compass, Send, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { GoldButton } from "./GoldButton";
 import lodgeLogo from "../../logo1.jpg";
+import sidePhoto from "../../side.png";
 
-export function MembershipInquiryPage() {
+export function BeAFreemasonPage() {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <section className="inquiry-page" id="membership-enquiry">
+    <section className="inquiry-page" id="be-a-freemason">
       <div className="inquiry-shell">
         <div className="inquiry-back-row">
-          <GoldButton href="/become-a-member" variant="outline" className="inquiry-back-button">
-            <ArrowLeft size={18} strokeWidth={1.8} /> Become a Member
+          <GoldButton href="/" variant="outline" className="inquiry-back-button">
+            <ArrowLeft size={18} strokeWidth={1.8} /> Back to Home
           </GoldButton>
         </div>
 
         <motion.div
-          className="inquiry-layout"
+          className="be-freemason-layout"
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="inquiry-form-panel">
             <img className="inquiry-logo" src={lodgeLogo} alt="Mt. Capistrano Masonic Lodge No. 23" />
-            <p className="section-label">Enquiry Form</p>
-            <h1>Membership Enquiry</h1>
+            <p className="section-label">Membership Path</p>
+            <h1>Be a Freemason</h1>
+            <p className="inquiry-intro">
+              Begin your journey toward light, character, and brotherhood. This form is for inquiry only and does not connect to a database yet.
+            </p>
 
             <form
               className="inquiry-form"
@@ -48,25 +52,22 @@ export function MembershipInquiryPage() {
                   <input type="tel" name="contactNumber" placeholder="Enter your contact number" />
                 </label>
                 <label>
-                  <span>Location</span>
+                  <span>Address / Location</span>
                   <input type="text" name="address" placeholder="City, province, or location" />
                 </label>
                 <label>
-                  <span>Inquiry Type</span>
-                  <select name="inquiryType" defaultValue="">
-                    <option value="" disabled>Select an inquiry type</option>
-                    <option>General membership question</option>
-                    <option>How to become a member</option>
-                    <option>Lodge activities</option>
-                    <option>Speak with a lodge representative</option>
-                    <option>Other</option>
-                  </select>
+                  <span>Age</span>
+                  <input type="number" name="age" placeholder="Enter your age" min="18" />
+                </label>
+                <label>
+                  <span>Occupation</span>
+                  <input type="text" name="occupation" placeholder="Enter your occupation" />
                 </label>
               </div>
 
               <label>
-                <span>Message / Question</span>
-                <textarea name="message" placeholder="Write your question or message" />
+                <span>Why do you want to be a Freemason?</span>
+                <textarea name="beAFreemason" placeholder="Write your answer" />
               </label>
 
               <label className="inquiry-consent">
@@ -75,17 +76,28 @@ export function MembershipInquiryPage() {
               </label>
 
               <button className="inquiry-submit" type="submit">
-                <Send size={18} strokeWidth={1.8} /> Submit Enquiry
+                <Send size={18} strokeWidth={1.8} /> Submit Inquiry
               </button>
-
             </form>
           </div>
+
+          <aside className="inquiry-side-panel">
+            <img className="inquiry-side-photo" src={sidePhoto} alt="A symbolic image for becoming a Freemason" />
+            <div className="inquiry-side-icon">
+              <Compass size={34} strokeWidth={1.3} />
+            </div>
+            <p>Ask one to be one.</p>
+            <h2>A sincere inquiry begins with character.</h2>
+            <p>
+              Freemasonry is a lifelong pursuit of light, brotherhood, relief, and truth. Take the first step with sincerity and patience.
+            </p>
+          </aside>
         </motion.div>
       </div>
 
       {submitted ? (
         <div className="inquiry-modal-overlay" onClick={() => setSubmitted(false)}>
-          <div className="inquiry-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="inquiry-modal" onClick={(event) => event.stopPropagation()}>
             <button className="inquiry-modal-close" onClick={() => setSubmitted(false)}>
               <X size={20} strokeWidth={1.8} />
             </button>

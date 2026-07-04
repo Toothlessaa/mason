@@ -9,7 +9,7 @@ export function MobileThankYouPage() {
         <p className="md-section-label">The Door Is Open</p>
         <h1>Thank you!</h1>
         <p>Thank you for your time. If you feel the calling, take that first step toward growth, purpose, and brotherhood.</p>
-        <a href="/membership-enquiry">Membership Enquiry <ArrowRight size={17} /></a>
+        <a href="/be-a-freemason">Be a Freemason <ArrowRight size={17} /></a>
       </div>
       <img className="md-thank-image" src={knockingImage} alt="A symbolic door for those ready to knock" />
     </section>

@@ -29,7 +29,7 @@ export function ThankYouPage() {
               </p>
               <p>The door is open... you only need to knock.</p>
             </div>
-            <GoldButton href="/membership-enquiry" className="thank-you-cta">
+            <GoldButton href="/be-a-freemason" className="thank-you-cta">
               Be a Freemason <ArrowRight size={18} strokeWidth={1.8} />
             </GoldButton>
           </div>

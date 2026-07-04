@@ -1,3 +1,4 @@
+import { MobileBeAFreemasonPage } from "./MobileBeAFreemasonPage";
 import { MobileBecomeMemberPage } from "./MobileBecomeMemberPage";
 import { MobileHome } from "./MobileHome";
 import { MobileMembershipInquiryPage } from "./MobileMembershipInquiryPage";
@@ -9,13 +10,14 @@ export function MobileApp() {
   const path = window.location.pathname;
   const isThankYouPage = path === "/thank-you";
   const isBecomeMemberPage = path === "/become-a-member";
-  const isInquiryPage = path === "/membership-enquiry" || path === "/be-a-freemason";
+  const isMembershipEnquiryPage = path === "/membership-enquiry";
+  const isBeAFreemasonPage = path === "/be-a-freemason";
 
   return (
     <div className="md-app">
-      {!isThankYouPage ? <MobileNavbar /> : null}
+      {!isThankYouPage && !isBeAFreemasonPage ? <MobileNavbar /> : null}
       <main>
-        {isBecomeMemberPage ? <MobileBecomeMemberPage /> : isInquiryPage ? <MobileMembershipInquiryPage /> : isThankYouPage ? <MobileThankYouPage /> : <MobileHome />}
+        {isBecomeMemberPage ? <MobileBecomeMemberPage /> : isMembershipEnquiryPage ? <MobileMembershipInquiryPage /> : isBeAFreemasonPage ? <MobileBeAFreemasonPage /> : isThankYouPage ? <MobileThankYouPage /> : <MobileHome />}
       </main>
     </div>
   );

@@ -564,6 +564,42 @@
   margin-top: 22px;
 }
 
+.md-inquiry-notes {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.md-inquiry-notes article {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border: 1px solid rgba(226, 196, 122, 0.14);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.md-inquiry-notes svg {
+  color: #f3dfb2;
+}
+
+.md-inquiry-notes strong {
+  display: block;
+  color: rgba(247, 248, 251, 0.9);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.md-inquiry-notes p {
+  margin: 4px 0 0;
+  color: rgba(217, 224, 237, 0.74);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 .md-form-card label {
   display: grid;
   gap: 8px;
@@ -578,6 +614,7 @@
 }
 
 .md-form-card input,
+.md-form-card select,
 .md-form-card textarea {
   width: 100%;
   min-height: 52px;
@@ -586,6 +623,19 @@
   background: rgba(255, 255, 255, 0.055);
   color: #f7f8fb;
   padding: 0 14px;
+}
+
+.md-form-card select {
+  color-scheme: dark;
+}
+
+.md-form-card select option {
+  background: #091326;
+  color: #f7f8fb;
+}
+
+.md-form-card select option:disabled {
+  color: rgba(217, 224, 237, 0.55);
 }
 
 .md-form-card textarea {

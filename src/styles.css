@@ -231,6 +231,7 @@ select {
 .mobile-nav a.is-active,
 .nav-dropdown:hover .nav-dropdown-trigger,
 .nav-dropdown:focus-within .nav-dropdown-trigger,
+.nav-dropdown.is-open .nav-dropdown-trigger,
 .nav-dropdown.is-active .nav-dropdown-trigger {
   color: var(--gold-300);
   text-shadow: 0 0 18px rgba(226, 196, 122, 0.28);
@@ -253,17 +254,30 @@ select {
 .mobile-nav a:hover .nav-underline,
 .mobile-nav a.is-active .nav-underline,
 .nav-dropdown:hover .nav-underline,
+.nav-dropdown.is-open .nav-underline,
 .nav-dropdown.is-active .nav-underline {
   transform: scaleX(1);
 }
 
 .nav-dropdown {
   position: relative;
+  padding-bottom: 10px;
+  margin-bottom: -10px;
+}
+
+.nav-dropdown::after {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 240px;
+  height: 18px;
+  transform: translateX(-50%);
+  content: "";
 }
 
 .nav-dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  top: 100%;
   left: 50%;
   z-index: 30;
   display: grid;
@@ -275,12 +289,10 @@ select {
   box-shadow: var(--shadow-soft);
   opacity: 0;
   pointer-events: none;
-  transform: translate(-50%, -6px);
+  transform: translate(-50%, 0);
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
-.nav-dropdown:hover .nav-dropdown-menu,
-.nav-dropdown:focus-within .nav-dropdown-menu,
 .nav-dropdown.is-open .nav-dropdown-menu {
   opacity: 1;
   pointer-events: auto;
@@ -2064,12 +2076,21 @@ a.footer-contact-card:focus-visible {
 
 .inquiry-layout {
   display: grid;
+  grid-template-columns: minmax(0, 820px);
+  justify-content: center;
+  gap: 22px;
+  align-items: stretch;
+}
+
+.be-freemason-layout {
+  display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
   gap: 22px;
   align-items: stretch;
 }
 
 .inquiry-form-panel,
+.inquiry-info-panel,
 .inquiry-side-panel {
   border: 1px solid rgba(226, 196, 122, 0.16);
   border-radius: 30px;
@@ -2081,6 +2102,10 @@ a.footer-contact-card:focus-visible {
 }
 
 .inquiry-form-panel {
+  padding: clamp(28px, 4vw, 52px);
+}
+
+.inquiry-info-panel {
   padding: clamp(28px, 4vw, 52px);
 }
 
@@ -2096,11 +2121,19 @@ a.footer-contact-card:focus-visible {
   box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.08), 0 12px 30px rgba(0, 0, 0, 0.28);
 }
 
-.inquiry-form-panel h1 {
+.inquiry-form-panel h1,
+.inquiry-info-panel h1 {
   margin: 20px 0 0;
   font-family: "Cinzel", serif;
   font-size: clamp(2.2rem, 4.2vw, 4rem);
   line-height: 1.02;
+}
+
+.inquiry-form-panel h2 {
+  margin: 20px 0 0;
+  font-family: "Cinzel", serif;
+  font-size: clamp(2rem, 3.2vw, 3.2rem);
+  line-height: 1.06;
 }
 
 .inquiry-intro {
@@ -2109,6 +2142,48 @@ a.footer-contact-card:focus-visible {
   color: rgba(217, 224, 237, 0.76);
   font-size: 1rem;
   line-height: 1.75;
+}
+
+.inquiry-note-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.inquiry-note-card {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  border: 1px solid rgba(226, 196, 122, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.inquiry-note-card svg {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  padding: 10px;
+  border: 1px solid rgba(226, 196, 122, 0.22);
+  border-radius: 50%;
+  color: var(--gold-300);
+}
+
+.inquiry-note-card strong {
+  display: block;
+  color: rgba(247, 248, 251, 0.9);
+  font-size: 0.84rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.inquiry-note-card p {
+  margin: 6px 0 0;
+  color: rgba(217, 224, 237, 0.72);
+  font-size: 0.92rem;
+  line-height: 1.55;
 }
 
 .inquiry-form {
@@ -2145,7 +2220,17 @@ a.footer-contact-card:focus-visible {
   background: rgba(255, 255, 255, 0.055);
   color: var(--white);
   outline: none;
+  color-scheme: dark;
   transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.inquiry-form select option {
+  background: #091326;
+  color: var(--white);
+}
+
+.inquiry-form select option:disabled {
+  color: rgba(217, 224, 237, 0.55);
 }
 
 .inquiry-form input,
@@ -2407,6 +2492,10 @@ a.footer-contact-card:focus-visible {
   }
 
   .inquiry-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .be-freemason-layout {
     grid-template-columns: 1fr;
   }
 
@@ -2968,6 +3057,8 @@ a.footer-contact-card:focus-visible {
   .become-member-intro h2,
   .become-member-cta h2,
   .inquiry-form-panel h1,
+  .inquiry-info-panel h1,
+  .inquiry-form-panel h2,
   .thank-you-copy h1 {
     font-size: clamp(2rem, 10vw, 3rem);
   }
@@ -3002,6 +3093,7 @@ a.footer-contact-card:focus-visible {
   }
 
   .inquiry-form-panel,
+  .inquiry-info-panel,
   .inquiry-side-panel,
   .thank-you-copy,
   .thank-you-image-card {
@@ -3339,12 +3431,14 @@ a.footer-contact-card:focus-visible {
   .thank-you-copy,
   .thank-you-image-card,
   .inquiry-form-panel,
+  .inquiry-info-panel,
   .inquiry-side-panel {
     border-radius: 22px;
   }
 
   .thank-you-copy,
   .inquiry-form-panel,
+  .inquiry-info-panel,
   .inquiry-side-panel {
     padding: 24px 20px;
   }
@@ -3479,6 +3573,8 @@ a.footer-contact-card:focus-visible {
   .gm-message-text h2,
   .footer-brand-block h2,
   .inquiry-form-panel h1,
+  .inquiry-info-panel h1,
+  .inquiry-form-panel h2,
   .thank-you-copy h1 {
     font-size: clamp(1.85rem, 10vw, 2.65rem);
   }

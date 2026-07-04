@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, LockKeyhole, Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GoldButton } from "./GoldButton";
@@ -33,10 +33,33 @@ function LogoAsset({ src, alt }: { src: string; alt: string }) {
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [membershipOpen, setMembershipOpen] = useState(false);
+  const membershipRef = useRef<HTMLDivElement | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [activeItem, setActiveItem] = useState("Home");
   const isHomePage = window.location.pathname === "/";
   const isMembershipPage = window.location.pathname === "/become-a-member" || window.location.pathname === "/membership-enquiry" || window.location.pathname === "/be-a-freemason";
+
+  useEffect(() => {
+    const onPointerDown = (event: PointerEvent) => {
+      if (!membershipRef.current?.contains(event.target as Node)) {
+        setMembershipOpen(false);
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMembershipOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     const sectionEntries = scrollNavItems.map((item) => ({
@@ -100,7 +123,13 @@ export function Navbar() {
 
       return [
         ...scrollLinks.slice(0, 3),
-        <div className={`nav-dropdown ${activeItem === "Membership" ? "is-active" : ""} ${membershipOpen ? "is-open" : ""}`} key="Membership">
+        <div
+          ref={membershipRef}
+          className={`nav-dropdown ${activeItem === "Membership" ? "is-active" : ""} ${membershipOpen ? "is-open" : ""}`}
+          key="Membership"
+          onMouseEnter={() => setMembershipOpen(true)}
+          onMouseLeave={() => setMembershipOpen(false)}
+        >
           <button
             className="nav-dropdown-trigger"
             type="button"
