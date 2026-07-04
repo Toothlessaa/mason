@@ -1,4 +1,5 @@
 import { ArrowRight, Compass, HandHeart, PlayCircle, Users } from "lucide-react";
+import { BackgroundEffects } from "../components/BackgroundEffects";
 import { GrandmasterMessage } from "../components/GrandmasterMessage";
 import { MediaCenter } from "../components/MediaCenter";
 import { ThreeLights } from "../components/ThreeLights";
@@ -15,6 +16,7 @@ export function MobileHome() {
   return (
     <>
       <section className="md-hero" id="home">
+        <BackgroundEffects />
         <p className="md-red-label">Ancient & Accepted Scottish Rite</p>
         <h1>Brotherhood Beyond Borders.</h1>
         <p>Welcome to Mt. Capistrano Masonic Lodge No. 23, where tradition meets service and leadership.</p>
@@ -23,11 +25,11 @@ export function MobileHome() {
           <a href="/thank-you" className="md-action-outline">Be a Freemason</a>
         </div>
         <div className="md-portrait-card">
-          <img src={grandPortrait} alt="Grandmaster Adelberto T. Pagsibigan" />
+          <img src={grandPortrait} alt="Grandmaster M.S. Adelberto T. Pagsibigan, 33°" />
           <div>
             <span>Grandmaster</span>
-            <strong>Adelberto T. Pagsibigan</strong>
-            <small>Mt. Capistrano Masonic Lodge No. 23</small>
+            <strong>M.S. Adelberto T. Pagsibigan, 33°</strong>
+            <small>DISTRICT GRAND LODGE OF THE FAR EAST — PHILIPPINE ISLANDS</small>
           </div>
         </div>
       </section>

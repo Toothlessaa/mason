@@ -16,7 +16,7 @@ export function GrandmasterMessage() {
         >
           <div className="gm-message-image-inner">
             <div className="gm-message-image-glow" />
-            <img src={grandPortrait} alt="District Grand Master Adelberto T. Pagsibigan" />
+            <img src={grandPortrait} alt="District Grand Master M.S. Adelberto T. Pagsibigan, 33°" />
           </div>
         </motion.div>
 
@@ -39,8 +39,7 @@ export function GrandmasterMessage() {
           </blockquote>
           <div className="gm-message-attribution">
             <p className="gm-message-name">
-              <span>M.S.</span>
-              <strong>Adelberto T. Pagsibigan, 33°</strong>
+              <strong>M.S. Adelberto T. Pagsibigan, 33°</strong>
             </p>
             <p className="gm-message-role">District Grand Master</p>
             <p className="gm-message-lodge">DISTRICT GRAND LODGE OF THE FAR EAST — PHILIPPINE ISLANDS</p>

@@ -132,7 +132,27 @@
 }
 
 .md-hero {
-  padding: 32px 0 44px;
+  position: relative;
+  width: 100%;
+  padding: 32px 12px 44px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.md-hero > :not(.background-effects) {
+  position: relative;
+  z-index: 1;
+}
+
+.md-hero .background-image {
+  background-position: center top;
+  opacity: 0.9;
+}
+
+.md-hero .background-scrim {
+  background:
+    linear-gradient(180deg, rgba(2, 7, 18, 0.58) 0%, rgba(2, 7, 18, 0.4) 34%, rgba(2, 7, 18, 0.86) 100%),
+    linear-gradient(90deg, rgba(2, 8, 18, 0.9), rgba(3, 11, 23, 0.5), rgba(2, 8, 18, 0.9));
 }
 
 .md-red-label,

@@ -10,10 +10,8 @@ export function GrandmasterCard() {
       viewport={{ once: true, amount: 0.45 }}
       transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.28 }}
     >
-      <span className="grandmaster-card-prefix">M.S.</span>
       <p className="grandmaster-card-name">
-        <span>Adelberto T.</span>
-        <strong>Pagsibigan</strong>
+        <strong>M.S. Adelberto T. Pagsibigan, 33°</strong>
       </p>
       <p className="grandmaster-card-role">District Grand Master</p>
       <div className="grandmaster-card-divider" />

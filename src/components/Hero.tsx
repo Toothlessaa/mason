@@ -75,7 +75,7 @@ export function Hero() {
                   transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
                 >
                   <div className="portrait-shadow" />
-                  <img className="portrait-image" src={grandPortrait} alt="Grandmaster Adelberto T. Pagsibigan" />
+                  <img className="portrait-image" src={grandPortrait} alt="Grandmaster M.S. Adelberto T. Pagsibigan, 33°" />
                 </motion.div>
                 <GrandmasterCard />
               </div>
