@@ -14,6 +14,7 @@ const scrollLinks = [
 const membershipLinks = [
   { label: "Become a Member", href: "/become-a-member" },
   { label: "Membership Enquiry", href: "/membership-enquiry" },
+  { label: "Member Login", href: "/member-login" },
 ];
 
 export function MobileNavbar() {

@@ -183,7 +183,7 @@ export function Navbar() {
         </nav>
 
         <div className="header-actions">
-          <GoldButton href="#login" variant="outline" className="member-login-button">
+          <GoldButton href="/member-login" variant="outline" className="member-login-button">
             <LockKeyhole size={16} strokeWidth={1.8} />
             Member&apos;s Login
           </GoldButton>
@@ -211,7 +211,7 @@ export function Navbar() {
             <nav className="mobile-nav" aria-label="Mobile navigation">
               {navLinks}
             </nav>
-            <GoldButton href="#login" variant="outline" className="mobile-login-button">
+            <GoldButton href="/member-login" variant="outline" className="mobile-login-button">
               <LockKeyhole size={16} strokeWidth={1.8} />
               Member&apos;s Login
             </GoldButton>
