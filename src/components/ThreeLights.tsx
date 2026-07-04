@@ -79,7 +79,6 @@ export function ThreeLights() {
     <section
       ref={sectionRef}
       className="three-lights-section"
-      id="membership"
     >
       <div className="three-lights-heading">
         <p className="section-label">The Lodge Officers</p>

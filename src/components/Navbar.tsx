@@ -1,11 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { LockKeyhole, Menu, X } from "lucide-react";
+import { ChevronDown, LockKeyhole, Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GoldButton } from "./GoldButton";
 import districtLogo from "../../logo.jpeg";
 import lodgeLogo from "../../logo1.jpg";
 
-const navItems = ["Home", "About", "Leadership", "Membership", "Media Center", "Contact"];
+const scrollNavItems = ["Home", "About", "Leadership", "Media Center", "Contact"];
+
+const membershipLinks = [
+  { label: "Become a Member", href: "/become-a-member" },
+  { label: "Membership Enquiry", href: "/membership-enquiry" },
+];
 
 function LogoFallback({ label }: { label: string }) {
   return (
@@ -27,17 +32,25 @@ function LogoAsset({ src, alt }: { src: string; alt: string }) {
 
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [membershipOpen, setMembershipOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeItem, setActiveItem] = useState("Home");
+  const isHomePage = window.location.pathname === "/";
+  const isMembershipPage = window.location.pathname === "/become-a-member" || window.location.pathname === "/membership-enquiry" || window.location.pathname === "/be-a-freemason";
 
   useEffect(() => {
-    const sectionEntries = navItems.map((item) => ({
+    const sectionEntries = scrollNavItems.map((item) => ({
       id: item.toLowerCase().replaceAll(" ", "-"),
       name: item,
     }));
 
     const onScroll = () => {
       setScrolled(window.scrollY > 20);
+
+      if (!isHomePage) {
+        setActiveItem(isMembershipPage ? "Membership" : "");
+        return;
+      }
 
       const navbarHeight = 90;
       let active = "Home";
@@ -58,21 +71,24 @@ export function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [isHomePage, isMembershipPage]);
 
   const navLinks = useMemo(
-    () =>
-      navItems.map((item) => {
+    () => {
+      const getHref = (slug: string) => (isHomePage ? `#${slug}` : `/#${slug}`);
+
+      const scrollLinks = scrollNavItems.map((item) => {
         const slug = item.toLowerCase().replaceAll(" ", "-");
         const isActive = activeItem === item;
 
         return (
           <a
             key={item}
-            href={`#${slug}`}
+            href={getHref(slug)}
             className={isActive ? "is-active" : undefined}
             onClick={() => {
               setMenuOpen(false);
+              setMembershipOpen(false);
               setActiveItem(item);
             }}
           >
@@ -80,8 +96,40 @@ export function Navbar() {
             <span className="nav-underline" />
           </a>
         );
-      }),
-    [activeItem],
+      });
+
+      return [
+        ...scrollLinks.slice(0, 3),
+        <div className={`nav-dropdown ${activeItem === "Membership" ? "is-active" : ""} ${membershipOpen ? "is-open" : ""}`} key="Membership">
+          <button
+            className="nav-dropdown-trigger"
+            type="button"
+            aria-expanded={membershipOpen}
+            onClick={() => setMembershipOpen((open) => !open)}
+          >
+            Membership <ChevronDown size={14} strokeWidth={2} />
+            <span className="nav-underline" />
+          </button>
+          <div className="nav-dropdown-menu">
+            {membershipLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => {
+                  setMenuOpen(false);
+                  setMembershipOpen(false);
+                  setActiveItem("Membership");
+                }}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </div>,
+        ...scrollLinks.slice(3),
+      ];
+    },
+    [activeItem, isHomePage, membershipOpen],
   );
 
   return (

@@ -9,7 +9,7 @@ export function MembershipInquiryPage() {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <section className="inquiry-page" id="be-a-freemason">
+    <section className="inquiry-page" id="membership-enquiry">
       <div className="inquiry-shell">
         <div className="inquiry-back-row">
           <GoldButton href="/" variant="outline" className="inquiry-back-button">
