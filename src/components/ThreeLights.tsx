@@ -6,9 +6,9 @@ import seniorWardenPhoto from "../../srward.jpg";
 import juniorWardenPhoto from "../../jrward.jpg";
 
 const officers = [
-  { name: "Worshipful Master", title: "Worshipful Master", photo: worshipfulMasterPhoto },
-  { name: "Senior Warden", title: "Senior Warden", photo: seniorWardenPhoto },
-  { name: "Junior Warden", title: "Junior Warden", photo: juniorWardenPhoto },
+  { name: "Noel J Blanco", title: "Worshipful Master", photo: worshipfulMasterPhoto },
+  { name: "Bro. Hope Earl Bucog", title: "Senior Warden", photo: seniorWardenPhoto },
+  { name: "Bro. Jose Regner M. Sevilleno", title: "Junior Warden", photo: juniorWardenPhoto },
 ];
 
 const lodgeName = "Mt. Capistrano Masonic Lodge No. 23";
