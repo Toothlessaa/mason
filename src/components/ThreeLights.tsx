@@ -6,7 +6,7 @@ import seniorWardenPhoto from "../../srward.jpg";
 import juniorWardenPhoto from "../../jrward.jpg";
 
 const officers = [
-  { name: "Noel J Blanco", title: "Worshipful Master", photo: worshipfulMasterPhoto },
+  { name: "Bro. Noel J Blanco", title: "Worshipful Master", photo: worshipfulMasterPhoto },
   { name: "Bro. Hope Earl Bucog", title: "Senior Warden", photo: seniorWardenPhoto },
   { name: "Bro. Jose Regner M. Sevilleno", title: "Junior Warden", photo: juniorWardenPhoto },
 ];
