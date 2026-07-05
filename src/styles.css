@@ -2870,6 +2870,19 @@ a.footer-contact-card:focus-visible {
   box-shadow: 0 0 42px rgba(226, 196, 122, 0.12);
 }
 
+.inquiry-ask-one-mark {
+  position: absolute;
+  top: clamp(24px, 3vw, 42px);
+  left: 50%;
+  z-index: 1;
+  width: min(84%, 460px);
+  height: auto;
+  transform: translateX(-50%);
+  border-radius: 8px;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.74));
+  pointer-events: none;
+}
+
 .inquiry-side-panel p:first-of-type {
   position: relative;
   z-index: 1;

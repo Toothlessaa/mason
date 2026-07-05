@@ -763,6 +763,26 @@
   left: 18px;
 }
 
+.md-freemason-hero .md-ask-one-mark {
+  position: absolute;
+  inset: auto auto auto 50%;
+  top: 22px;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  z-index: 1;
+  display: block;
+  width: min(72%, 420px);
+  height: auto;
+  max-height: 120px;
+  transform: translateX(-50%);
+  border-radius: 8px;
+  object-fit: contain;
+  opacity: 1;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.74));
+  pointer-events: none;
+}
+
 .md-freemason-hero-copy span {
   display: block;
   color: #f3dfb2;

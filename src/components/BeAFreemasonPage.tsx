@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { GoldButton } from "./GoldButton";
 import lodgeLogo from "../../logo1.jpg";
 import sidePhoto from "../../side.png";
+import askOneImage from "../../2b1 ask 1.jpg";
 
 export function BeAFreemasonPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -83,10 +84,7 @@ export function BeAFreemasonPage() {
 
           <aside className="inquiry-side-panel">
             <img className="inquiry-side-photo" src={sidePhoto} alt="A symbolic image for becoming a Freemason" />
-            <div className="inquiry-side-icon">
-              <Compass size={34} strokeWidth={1.3} />
-            </div>
-            <p>To be one ask one.</p>
+            <img className="inquiry-ask-one-mark" src={askOneImage} alt="2B1 ASK1" />
             <h2>A sincere inquiry begins with character.</h2>
             <p>
               Freemasonry is a lifelong pursuit of light, brotherhood, relief, and truth. Take the first step with sincerity and patience.

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowLeft, Compass, Send, X } from "lucide-react";
 import lodgeLogo from "../../logo1.jpg";
 import sidePhoto from "../../side.png";
+import askOneImage from "../../2b1 ask 1.jpg";
 
 export function MobileBeAFreemasonPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -12,13 +13,10 @@ export function MobileBeAFreemasonPage() {
 
       <aside className="md-freemason-hero">
         <img src={sidePhoto} alt="A symbolic image for becoming a Freemason" />
+        <img className="md-ask-one-mark" src={askOneImage} alt="2B1 ASK1" />
         <div className="md-freemason-hero-copy">
-          <span>To be one ask one.</span>
           <h2>A sincere inquiry begins with character.</h2>
           <p>Freemasonry is a lifelong pursuit of light, brotherhood, relief, and truth. Take the first step with sincerity and patience.</p>
-        </div>
-        <div className="md-freemason-compass">
-          <Compass size={28} strokeWidth={1.3} />
         </div>
       </aside>
 
