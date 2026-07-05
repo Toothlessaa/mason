@@ -131,7 +131,7 @@ export function MediaCenter() {
         viewport={{ once: true, amount: 0.35 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p className="section-label">Media Center</p>
+        <p className="section-label">Media</p>
         <h2>Moments of ceremony, service, fellowship, and brotherhood.</h2>
         <p>
           A curated archive for milestones, community works, announcements, and selected lodge moments presented with dignity.

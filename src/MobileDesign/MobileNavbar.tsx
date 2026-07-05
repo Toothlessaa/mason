@@ -1,25 +1,23 @@
 import { useState } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import districtLogo from "../../logo.jpeg";
 import lodgeLogo from "../../logo1.jpg";
 
-const scrollLinks = [
+type ScrollLink =
+  | { label: string; href: string; disabled?: never }
+  | { label: string; disabled: true; href?: never };
+
+const scrollLinks: ScrollLink[] = [
   { label: "Home", href: "/#home" },
   { label: "About", href: "/#about" },
   { label: "Leadership", href: "/#leadership" },
-  { label: "Media Center", href: "/#media-center" },
+  { label: "Media", href: "/#media-center" },
+  { label: "eBooks & Souvenirs", disabled: true },
   { label: "Contact", href: "/#contact" },
-];
-
-const membershipLinks = [
-  { label: "Become a Member", href: "/become-a-member" },
-  { label: "Membership Enquiry", href: "/membership-enquiry" },
-  { label: "Member Login", href: "/member-login" },
 ];
 
 export function MobileNavbar() {
   const [open, setOpen] = useState(false);
-  const [membershipOpen, setMembershipOpen] = useState(false);
 
   return (
     <header className="md-header">
@@ -38,21 +36,12 @@ export function MobileNavbar() {
 
       {open ? (
         <nav className="md-menu" aria-label="Mobile navigation">
-          {scrollLinks.slice(0, 3).map((link) => (
-            <a key={link.href} href={link.href} onClick={() => setOpen(false)}>{link.label}</a>
-          ))}
-          <button className="md-menu-parent" type="button" aria-expanded={membershipOpen} onClick={() => setMembershipOpen((value) => !value)}>
-            Membership <ChevronDown size={16} />
-          </button>
-          {membershipOpen ? (
-            <div className="md-submenu">
-              {membershipLinks.map((link) => (
-                <a key={link.href} href={link.href} onClick={() => setOpen(false)}>{link.label}</a>
-              ))}
-            </div>
-          ) : null}
-          {scrollLinks.slice(3).map((link) => (
-            <a key={link.href} href={link.href} onClick={() => setOpen(false)}>{link.label}</a>
+          {scrollLinks.map((link) => (
+            link.disabled ? (
+              <span className="md-menu-disabled" key={link.label} aria-disabled="true">{link.label}</span>
+            ) : (
+              <a key={link.href} href={link.href} onClick={() => setOpen(false)}>{link.label}</a>
+            )
           ))}
         </nav>
       ) : null}
