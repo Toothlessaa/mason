@@ -1,5 +1,6 @@
 export { supabase } from "../lib/supabase";
 export type { MemberProfile } from "../lib/supabase";
+export type { MediaPost, MediaPostStatus } from "../lib/supabase";
 export {
   signIn,
   adminSignIn,
@@ -11,4 +12,9 @@ export {
   getMembers,
   getAllMembers,
   updateMemberStatus,
+  getPublishedMediaPosts,
+  getAllMediaPosts,
+  createMediaPost,
+  updateMediaPostStatus,
+  deleteMediaPost,
 } from "../lib/supabase";

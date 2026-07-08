@@ -49,7 +49,7 @@ export function Footer() {
 
         <div className="footer-bottom">
           <p>@2026 Mt. Capistrano Masonic Lodge No. 23. All Rights Reserved.</p>
-          <p>Web Design by Bro. Noel Blanco - I</p>
+          <p>Crafted by Bro. Noel Blanco - I</p>
         </div>
       </motion.div>
     </footer>

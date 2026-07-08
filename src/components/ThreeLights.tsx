@@ -7,8 +7,8 @@ import juniorWardenPhoto from "../../jrward.jpg";
 
 const officers = [
   { name: "Bro. Noel J Blanco", title: "Worshipful Master", photo: worshipfulMasterPhoto },
-  { name: "Bro. Hope Earl Bucog", title: "Senior Warden", photo: seniorWardenPhoto },
   { name: "Bro. Jose Regner M. Sevilleno", title: "Junior Warden", photo: juniorWardenPhoto },
+  { name: "Bro. Hope Earl Bucog", title: "Senior Warden", photo: seniorWardenPhoto },
 ];
 
 const lodgeName = "Mt. Capistrano Masonic Lodge No. 23";
@@ -47,8 +47,10 @@ export function ThreeLights() {
   const trackRef = useRef<HTMLDivElement>(null);
   const offset = useOffset();
 
-  const next = useCallback(() => setActiveIndex((i) => (i + 1) % 3), []);
-  const prev = useCallback(() => setActiveIndex((i) => (i + 2) % 3), []);
+  const nextMap = [2, 0, 1];
+  const prevMap = [1, 2, 0];
+  const next = useCallback(() => setActiveIndex(nextMap[activeIndex]), [activeIndex]);
+  const prev = useCallback(() => setActiveIndex(prevMap[activeIndex]), [activeIndex]);
 
   useEffect(() => {
     if (isPaused || !hasBeenInView) return;

@@ -57,7 +57,7 @@ export function MemberLoginPage() {
               <img src={lodgeLogo} alt="Mt. Capistrano Masonic Lodge No. 23" />
             </div>
             <p className="section-label">Member Portal</p>
-            <h1>Member Login</h1>
+            <h1>Lodge Access</h1>
 
             <div className="auth-tabs">
               <button

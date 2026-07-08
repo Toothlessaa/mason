@@ -24,6 +24,30 @@ export type MemberProfile = {
   created_at: string;
 };
 
+export type MediaPostStatus = "draft" | "published";
+
+export type MediaPost = {
+  id: string;
+  title: string;
+  category: string;
+  date: string;
+  summary: string;
+  image_url: string;
+  storage_path: string | null;
+  status: MediaPostStatus;
+  created_by: string | null;
+  created_at: string;
+};
+
+type MediaPostInput = {
+  title: string;
+  category: string;
+  date: string;
+  summary: string;
+  status: MediaPostStatus;
+  createdBy?: string;
+};
+
 // --- Session management (localStorage) ---
 
 const SESSION_KEY = "masonic_session";
@@ -177,4 +201,92 @@ export async function updateMemberStatus(memberId: string, status: string) {
     .single();
 
   return { data: data as MemberProfile | null, error };
+}
+
+// --- Media management ---
+
+const MEDIA_BUCKET = "media";
+
+function getSafeFileName(fileName: string) {
+  return fileName.toLowerCase().replace(/[^a-z0-9.]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+export async function getPublishedMediaPosts() {
+  const { data, error } = await supabase
+    .from("media_posts")
+    .select("*")
+    .eq("status", "published")
+    .order("created_at", { ascending: false });
+
+  return { data: data as MediaPost[] | null, error };
+}
+
+export async function getAllMediaPosts() {
+  const { data, error } = await supabase
+    .from("media_posts")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  return { data: data as MediaPost[] | null, error };
+}
+
+export async function uploadMediaImage(file: File) {
+  const storagePath = `${Date.now()}-${getSafeFileName(file.name)}`;
+  const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(storagePath, file, {
+    cacheControl: "3600",
+    upsert: false,
+  });
+
+  if (error) return { imageUrl: null, storagePath: null, error };
+
+  const { data } = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(storagePath);
+  return { imageUrl: data.publicUrl, storagePath, error: null };
+}
+
+export async function createMediaPost(input: MediaPostInput, imageFile: File) {
+  const upload = await uploadMediaImage(imageFile);
+  if (upload.error || !upload.imageUrl) {
+    return { data: null, error: upload.error || new Error("Unable to upload image.") };
+  }
+
+  const { data, error } = await supabase
+    .from("media_posts")
+    .insert({
+      title: input.title,
+      category: input.category,
+      date: input.date,
+      summary: input.summary,
+      image_url: upload.imageUrl,
+      storage_path: upload.storagePath,
+      status: input.status,
+      created_by: input.createdBy || null,
+    })
+    .select()
+    .single();
+
+  return { data: data as MediaPost | null, error };
+}
+
+export async function updateMediaPostStatus(postId: string, status: MediaPostStatus) {
+  const { data, error } = await supabase
+    .from("media_posts")
+    .update({ status })
+    .eq("id", postId)
+    .select()
+    .single();
+
+  return { data: data as MediaPost | null, error };
+}
+
+export async function deleteMediaPost(post: MediaPost) {
+  if (post.storage_path) {
+    await supabase.storage.from(MEDIA_BUCKET).remove([post.storage_path]);
+  }
+
+  const { error } = await supabase
+    .from("media_posts")
+    .delete()
+    .eq("id", post.id);
+
+  return { error };
 }

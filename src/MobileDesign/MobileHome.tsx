@@ -79,6 +79,7 @@ export function MobileHome() {
         <a href="https://www.facebook.com/profile.php?id=61556922214693" target="_blank" rel="noreferrer">Official Facebook Page</a>
         <a href="/become-a-member">Become a Member</a>
         <p>@2026 Mt. Capistrano Masonic Lodge No. 23. All Rights Reserved.</p>
+        <p>Crafted by Bro. Noel Blanco - I</p>
       </footer>
     </>
   );

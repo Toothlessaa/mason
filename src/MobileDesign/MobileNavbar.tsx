@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { LockKeyhole, Menu, X } from "lucide-react";
 import districtLogo from "../../logo.jpeg";
 import lodgeLogo from "../../logo1.jpg";
 
@@ -27,7 +27,14 @@ export function MobileNavbar() {
             <img src={districtLogo} alt="District Grand Lodge of the Far East" />
             <img src={lodgeLogo} alt="Mt. Capistrano Masonic Lodge No. 23" />
           </span>
-          <span className="md-brand-text">Masonic Lodge No. 23</span>
+          <span className="md-brand-text">
+            <span>Masonic Lodge</span>
+            <span className="md-brand-number">No. 23</span>
+          </span>
+        </a>
+        <a href="/member-login" className="md-access-link">
+          <LockKeyhole size={14} strokeWidth={1.8} />
+          Member Access
         </a>
         <button className="md-menu-button" type="button" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen((value) => !value)}>
           {open ? <X size={22} /> : <Menu size={22} />}

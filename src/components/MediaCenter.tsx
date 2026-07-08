@@ -8,6 +8,7 @@ import milestonePhoto from "../../milestone.jpg";
 import secondPhoto from "../../s.jpg";
 import communityPhoto from "../../community.png";
 import charityPhoto from "../../charity.jpg";
+import { getPublishedMediaPosts, type MediaPost } from "../data/memberPortal";
 
 type MediaItem = {
   title: string;
@@ -21,7 +22,7 @@ type MediaItem = {
 
 const filters = ["All", "Ceremonies", "Community", "Brotherhood", "Announcements"];
 
-const mediaItems: MediaItem[] = [
+const fallbackMediaItems: MediaItem[] = [
   {
     title: "Installation of Officers",
     category: "Ceremony",
@@ -87,18 +88,58 @@ const mediaItems: MediaItem[] = [
   },
 ];
 
+function getIconForCategory(category: string) {
+  if (category === "Announcement") return Newspaper;
+  if (category === "Brotherhood") return Film;
+  return Camera;
+}
+
+function getAccent(index: number): MediaItem["accent"] {
+  return (["gold", "blue", "violet"] as const)[index % 3];
+}
+
+function mapMediaPost(post: MediaPost, index: number): MediaItem {
+  return {
+    title: post.title,
+    category: post.category,
+    date: post.date,
+    summary: post.summary,
+    accent: getAccent(index),
+    icon: getIconForCategory(post.category),
+    image: post.image_url,
+  };
+}
+
 export function MediaCenter() {
   const reduceMotion = useReducedMotion();
   const [topStart, setTopStart] = useState(0);
   const [isTopPaused, setIsTopPaused] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null);
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>(fallbackMediaItems);
   const topItems = mediaItems.slice(0, 3);
-  const featured = topItems[topStart];
-  const highlights = [topItems[(topStart + 1) % topItems.length], topItems[(topStart + 2) % topItems.length]];
+  const featured = topItems[topStart] || topItems[0];
+  const highlights = topItems.filter((_, index) => index !== topStart).slice(0, 2);
   const gridItems = mediaItems.slice(3);
 
   useEffect(() => {
-    if (reduceMotion || isTopPaused || selectedItem) return;
+    let active = true;
+
+    const loadMediaPosts = async () => {
+      const { data } = await getPublishedMediaPosts();
+      if (!active || !data?.length) return;
+      setTopStart(0);
+      setMediaItems(data.map(mapMediaPost));
+    };
+
+    loadMediaPosts();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (topItems.length < 2 || reduceMotion || isTopPaused || selectedItem) return;
     const timer = window.setInterval(() => {
       setTopStart((current) => (current + 1) % topItems.length);
     }, 5000);
@@ -141,7 +182,7 @@ export function MediaCenter() {
       <div className="media-feature-layout" onMouseEnter={() => setIsTopPaused(true)} onMouseLeave={() => setIsTopPaused(false)}>
         <MediaCard key="featured-media-card" item={featured} variant="featured" index={0} onSelect={setSelectedItem} />
         <div className="media-highlight-stack">
-          {highlights.map((item, index) => (
+          {highlights.filter(Boolean).map((item, index) => (
             <MediaCard key={`highlight-media-card-${index}`} item={item} variant="highlight" index={index + 1} onSelect={setSelectedItem} />
           ))}
         </div>

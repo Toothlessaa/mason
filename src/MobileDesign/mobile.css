@@ -70,6 +70,35 @@
   background: rgba(226, 196, 122, 0.06);
 }
 
+.md-admin-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.md-admin-tabs button {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(226, 196, 122, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(217, 224, 237, 0.66);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.md-admin-tabs button.is-active {
+  border-color: rgba(226, 196, 122, 0.38);
+  background: rgba(226, 196, 122, 0.12);
+  color: #f3dfb2;
+}
+
 .md-members-summary {
   display: flex;
   gap: 10px;
@@ -161,6 +190,43 @@
   color: rgba(236, 241, 249, 0.8);
 }
 
+.md-member-actions-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.md-member-actions-row button {
+  flex: 1;
+}
+
+.md-admin-media-wrap {
+  width: min(100%, calc(100% - 24px));
+  margin: 10px auto 0;
+}
+
+.md-admin-media-wrap .admin-media-panel {
+  margin-top: 0;
+}
+
+.md-admin-media-wrap .members-table-card {
+  border-radius: 20px;
+}
+
+.md-admin-media-wrap .inquiry-field-grid,
+.md-admin-media-wrap .admin-media-card {
+  grid-template-columns: 1fr;
+}
+
+.md-admin-media-wrap .admin-media-form,
+.md-admin-media-wrap .admin-media-list {
+  padding: 14px;
+}
+
+.md-admin-media-wrap .admin-media-actions {
+  flex-direction: column;
+}
+
 .md-header-bar,
 .md-menu {
   width: min(100%, calc(100% - 24px));
@@ -173,10 +239,10 @@
 
 .md-header-bar {
   display: flex;
-  min-height: 64px;
+  min-height: 72px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
   padding: 0 12px;
   border-radius: 20px;
 }
@@ -204,13 +270,46 @@
 }
 
 .md-brand-text {
+  display: flex;
+  flex-direction: column;
   color: #f7f8fb;
   font-family: "Cinzel", serif;
-  font-size: clamp(0.74rem, 3.6vw, 0.94rem);
+  font-size: clamp(0.68rem, 3.2vw, 0.88rem);
   font-weight: 700;
   letter-spacing: 0.06em;
-  line-height: 1.1;
+  line-height: 1.2;
   text-transform: uppercase;
+}
+
+.md-brand-number {
+  font-size: 0.85em;
+  letter-spacing: 0.12em;
+  color: #eccf8b;
+  font-weight: 600;
+}
+
+.md-access-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  padding: 7px 14px;
+  border: 1px solid rgba(226, 196, 122, 0.36);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(248, 236, 198, 0.98), rgba(200, 162, 74, 0.96) 45%, rgba(156, 116, 35, 0.96));
+  color: #061224;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(200, 162, 74, 0.28);
+  transition: box-shadow 0.25s ease;
+  text-decoration: none;
+}
+
+.md-access-link:hover {
+  box-shadow: 0 6px 24px rgba(200, 162, 74, 0.45);
 }
 
 .md-menu-button {

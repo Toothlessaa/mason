@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, LogOut, ShieldCheck, Check, X, RefreshCw } from "lucide-react";
+import { ArrowLeft, Images, LogOut, ShieldCheck, Check, X, RefreshCw, Users } from "lucide-react";
 import districtLogo from "../../logo.jpeg";
 import lodgeLogo from "../../logo1.jpg";
 import { signOut, getAdminSession, getAllMembers, updateMemberStatus, type MemberProfile } from "../data/memberPortal";
+import { MediaAdminPanel } from "../components/MediaAdminPanel";
 
 export function MobileAdminPage() {
   const [authorized, setAuthorized] = useState(false);
   const [members, setMembers] = useState<MemberProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [sessionName, setSessionName] = useState("");
+  const [activeSection, setActiveSection] = useState<"members" | "media">("members");
 
   const loadMembers = async () => {
     setLoading(true);
@@ -57,8 +59,8 @@ export function MobileAdminPage() {
           <img src={lodgeLogo} alt="Mt. Capistrano Masonic Lodge No. 23" />
         </div>
         <p className="md-section-label">Administration</p>
-        <h1>Admin Dashboard</h1>
-        <p>Welcome, {sessionName}.</p>
+        <h1>{activeSection === "members" ? "Members" : "Media"}</h1>
+        <p>Welcome, {sessionName}. Manage lodge operations from one console.</p>
         <div className="md-members-actions">
           <a href="/"><ArrowLeft size={16} /> Home</a>
           <button type="button" onClick={loadMembers} style={{ background: "none", border: "none", cursor: "pointer", color: "inherit", display: "flex", alignItems: "center", gap: "6px" }}>
@@ -68,56 +70,65 @@ export function MobileAdminPage() {
             <LogOut size={16} /> Logout
           </button>
         </div>
+
+        <div className="md-admin-tabs" aria-label="Admin sections">
+          <button type="button" className={activeSection === "members" ? "is-active" : undefined} onClick={() => setActiveSection("members")}>
+            <Users size={16} /> Members
+          </button>
+          <button type="button" className={activeSection === "media" ? "is-active" : undefined} onClick={() => setActiveSection("media")}>
+            <Images size={16} /> Media
+          </button>
+        </div>
       </div>
 
-      <div className="md-members-summary">
-        <span><strong>{members.length}</strong> Total</span>
-        <span><strong>{pendingCount}</strong> Pending</span>
-        <span><strong>{activeCount}</strong> Active</span>
-      </div>
+      {activeSection === "members" ? (
+        <>
+          <div className="md-members-summary">
+            <span><strong>{members.length}</strong> Total</span>
+            <span><strong>{pendingCount}</strong> Pending</span>
+            <span><strong>{activeCount}</strong> Active</span>
+          </div>
 
-      <div className="md-members-list">
-        {loading ? (
-          <p style={{ textAlign: "center", color: "rgba(217,224,237,0.6)", padding: "24px" }}>Loading members...</p>
-        ) : members.length === 0 ? (
-          <p style={{ textAlign: "center", color: "rgba(217,224,237,0.6)", padding: "24px" }}>No members found.</p>
-        ) : (
-          members.map((member) => (
-            <article className="md-member-card" key={member.id}>
-              <div className="md-member-card-head">
-                <ShieldCheck size={18} />
-                <span className={`members-status members-status-${member.status.toLowerCase()}`}>{member.status}</span>
-              </div>
-              <h2>{member.name}</h2>
-              <p>{member.role} {member.is_admin ? "(Admin)" : ""}</p>
-              <dl>
-                <div><dt>Email</dt><dd>{member.email}</dd></div>
-                <div><dt>Phone</dt><dd>{member.phone || "—"}</dd></div>
-                <div><dt>Address</dt><dd>{member.address || "—"}</dd></div>
-                <div><dt>Freemason Info</dt><dd>{member.is_freemason || "—"}</dd></div>
-              </dl>
-              {member.status === "Pending" ? (
-                <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
-                  <button
-                    type="button"
-                    style={{ flex: 1, padding: "8px", borderRadius: "6px", border: "1px solid rgba(34,197,94,0.3)", background: "rgba(34,197,94,0.15)", color: "#22c55e", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
-                    onClick={() => handleApprove(member.id)}
-                  >
-                    <Check size={15} /> Confirm
-                  </button>
-                  <button
-                    type="button"
-                    style={{ flex: 1, padding: "8px", borderRadius: "6px", border: "1px solid rgba(239,68,68,0.3)", background: "rgba(239,68,68,0.15)", color: "#ef4444", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
-                    onClick={() => handleReject(member.id)}
-                  >
-                    <X size={15} /> Reject
-                  </button>
-                </div>
-              ) : null}
-            </article>
-          ))
-        )}
-      </div>
+          <div className="md-members-list">
+            {loading ? (
+              <p style={{ textAlign: "center", color: "rgba(217,224,237,0.6)", padding: "24px" }}>Loading members...</p>
+            ) : members.length === 0 ? (
+              <p style={{ textAlign: "center", color: "rgba(217,224,237,0.6)", padding: "24px" }}>No members found.</p>
+            ) : (
+              members.map((member) => (
+                <article className="md-member-card" key={member.id}>
+                  <div className="md-member-card-head">
+                    <ShieldCheck size={18} />
+                    <span className={`members-status members-status-${member.status.toLowerCase()}`}>{member.status}</span>
+                  </div>
+                  <h2>{member.name}</h2>
+                  <p>{member.role} {member.is_admin ? "(Admin)" : ""}</p>
+                  <dl>
+                    <div><dt>Email</dt><dd>{member.email}</dd></div>
+                    <div><dt>Phone</dt><dd>{member.phone || "—"}</dd></div>
+                    <div><dt>Address</dt><dd>{member.address || "—"}</dd></div>
+                    <div><dt>Freemason Info</dt><dd>{member.is_freemason || "—"}</dd></div>
+                  </dl>
+                  {member.status === "Pending" ? (
+                    <div className="md-member-actions-row">
+                      <button type="button" className="admin-confirm-button" onClick={() => handleApprove(member.id)}>
+                        <Check size={15} /> Confirm
+                      </button>
+                      <button type="button" className="admin-reject-button" onClick={() => handleReject(member.id)}>
+                        <X size={15} /> Reject
+                      </button>
+                    </div>
+                  ) : null}
+                </article>
+              ))
+            )}
+          </div>
+        </>
+      ) : (
+        <div className="md-admin-media-wrap">
+          <MediaAdminPanel adminName={sessionName} />
+        </div>
+      )}
     </section>
   );
 }
