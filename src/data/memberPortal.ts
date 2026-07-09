@@ -15,6 +15,7 @@ export {
   getPublishedMediaPosts,
   getAllMediaPosts,
   createMediaPost,
+  updateMediaPost,
   updateMediaPostStatus,
   deleteMediaPost,
 } from "../lib/supabase";

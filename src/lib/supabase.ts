@@ -33,7 +33,9 @@ export type MediaPost = {
   date: string;
   summary: string;
   image_url: string;
+  image_urls: string[] | null;
   storage_path: string | null;
+  storage_paths: string[] | null;
   status: MediaPostStatus;
   created_by: string | null;
   created_at: string;
@@ -243,10 +245,28 @@ export async function uploadMediaImage(file: File) {
   return { imageUrl: data.publicUrl, storagePath, error: null };
 }
 
-export async function createMediaPost(input: MediaPostInput, imageFile: File) {
-  const upload = await uploadMediaImage(imageFile);
-  if (upload.error || !upload.imageUrl) {
-    return { data: null, error: upload.error || new Error("Unable to upload image.") };
+async function uploadMediaImages(files: File[]) {
+  const imageUrls: string[] = [];
+  const storagePaths: string[] = [];
+
+  for (const file of files) {
+    const upload = await uploadMediaImage(file);
+    if (upload.error || !upload.imageUrl) {
+      if (storagePaths.length) await supabase.storage.from(MEDIA_BUCKET).remove(storagePaths);
+      return { imageUrls: null, storagePaths: null, error: upload.error || new Error("Unable to upload image.") };
+    }
+
+    imageUrls.push(upload.imageUrl);
+    if (upload.storagePath) storagePaths.push(upload.storagePath);
+  }
+
+  return { imageUrls, storagePaths, error: null };
+}
+
+export async function createMediaPost(input: MediaPostInput, imageFiles: File[]) {
+  const upload = await uploadMediaImages(imageFiles);
+  if (upload.error || !upload.imageUrls?.length) {
+    return { data: null, error: upload.error || new Error("Unable to upload images.") };
   }
 
   const { data, error } = await supabase
@@ -256,11 +276,45 @@ export async function createMediaPost(input: MediaPostInput, imageFile: File) {
       category: input.category,
       date: input.date,
       summary: input.summary,
-      image_url: upload.imageUrl,
-      storage_path: upload.storagePath,
+      image_url: upload.imageUrls[0],
+      image_urls: upload.imageUrls,
+      storage_path: upload.storagePaths?.[0] || null,
+      storage_paths: upload.storagePaths || [],
       status: input.status,
       created_by: input.createdBy || null,
     })
+    .select()
+    .single();
+
+  return { data: data as MediaPost | null, error };
+}
+
+export async function updateMediaPost(post: MediaPost, input: MediaPostInput, imageFiles: File[] = []) {
+  const upload = imageFiles.length ? await uploadMediaImages(imageFiles) : { imageUrls: [] as string[], storagePaths: [] as string[], error: null };
+  if (upload.error) {
+    return { data: null, error: upload.error };
+  }
+
+  const existingImageUrls = post.image_urls?.length ? post.image_urls : [post.image_url].filter(Boolean);
+  const existingStoragePaths = post.storage_paths?.length ? post.storage_paths : [post.storage_path].filter(Boolean) as string[];
+  const imageUrls = [...existingImageUrls, ...(upload.imageUrls || [])];
+  const storagePaths = [...existingStoragePaths, ...(upload.storagePaths || [])];
+
+  const { data, error } = await supabase
+    .from("media_posts")
+    .update({
+      title: input.title,
+      category: input.category,
+      date: input.date,
+      summary: input.summary,
+      image_url: imageUrls[0] || post.image_url,
+      image_urls: imageUrls,
+      storage_path: storagePaths[0] || post.storage_path,
+      storage_paths: storagePaths,
+      status: input.status,
+      created_by: input.createdBy || post.created_by,
+    })
+    .eq("id", post.id)
     .select()
     .single();
 
@@ -279,8 +333,9 @@ export async function updateMediaPostStatus(postId: string, status: MediaPostSta
 }
 
 export async function deleteMediaPost(post: MediaPost) {
-  if (post.storage_path) {
-    await supabase.storage.from(MEDIA_BUCKET).remove([post.storage_path]);
+  const storagePaths = post.storage_paths?.length ? post.storage_paths : [post.storage_path].filter(Boolean) as string[];
+  if (storagePaths.length) {
+    await supabase.storage.from(MEDIA_BUCKET).remove([...new Set(storagePaths)]);
   }
 
   const { error } = await supabase

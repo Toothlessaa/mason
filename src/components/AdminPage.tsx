@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, Images, LayoutDashboard, LogOut, ShieldCheck, Check, X, RefreshCw, Users } from "lucide-react";
+import { ArrowLeft, ClipboardCheck, Images, LogOut, ShieldCheck, Check, X, RefreshCw, Users } from "lucide-react";
 import districtLogo from "../../logo.jpeg";
 import lodgeLogo from "../../logo1.jpg";
 import { signOut, getAdminSession, getAllMembers, updateMemberStatus, type MemberProfile } from "../data/memberPortal";
@@ -10,7 +10,7 @@ export function AdminPage() {
   const [members, setMembers] = useState<MemberProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [sessionName, setSessionName] = useState("");
-  const [activeSection, setActiveSection] = useState<"members" | "media">("members");
+  const [activeSection, setActiveSection] = useState<"approvals" | "members" | "media">("approvals");
 
   const loadMembers = async () => {
     setLoading(true);
@@ -50,6 +50,14 @@ export function AdminPage() {
 
   const pendingCount = members.filter((m) => m.status === "Pending").length;
   const activeCount = members.filter((m) => m.status === "Active").length;
+  const visibleMembers = activeSection === "approvals" ? members.filter((member) => member.status === "Pending") : members;
+  const isMemberSection = activeSection === "approvals" || activeSection === "members";
+  const pageTitle = activeSection === "approvals" ? "Pending Approvals" : activeSection === "members" ? "Members Database" : "Media Management";
+  const pageIntro = activeSection === "approvals"
+    ? "Review new lodge applications before they enter the member database."
+    : activeSection === "members"
+      ? "Browse every member record currently stored in the database."
+      : "Upload media posts as drafts or publish them to the public website.";
 
   return (
     <section className="admin-dashboard-page">
@@ -65,6 +73,9 @@ export function AdminPage() {
           </div>
 
           <nav className="admin-sidebar-nav">
+            <button type="button" className={activeSection === "approvals" ? "is-active" : undefined} onClick={() => setActiveSection("approvals")}>
+              <ClipboardCheck size={18} strokeWidth={1.8} /> Approvals
+            </button>
             <button type="button" className={activeSection === "members" ? "is-active" : undefined} onClick={() => setActiveSection("members")}>
               <Users size={18} strokeWidth={1.8} /> Members
             </button>
@@ -87,9 +98,9 @@ export function AdminPage() {
           <header className="admin-dashboard-header">
             <div>
               <p className="section-label">Administration</p>
-              <h1>{activeSection === "members" ? "Member Management" : "Media Management"}</h1>
+              <h1>{pageTitle}</h1>
               <p className="members-intro">
-                Welcome, {sessionName}. {activeSection === "members" ? "Review lodge applications and account status." : "Upload media posts as drafts or publish them to the public website."}
+                Welcome, {sessionName}. {pageIntro}
               </p>
             </div>
 
@@ -100,7 +111,7 @@ export function AdminPage() {
             </div>
           </header>
 
-          {activeSection === "members" ? (
+          {isMemberSection ? (
             <>
               <div className="members-stats" aria-label="Member summary">
                 <div>
@@ -120,17 +131,17 @@ export function AdminPage() {
               <div className="members-table-card">
                 <div className="members-table-heading">
                   <ShieldCheck size={20} strokeWidth={1.7} />
-                  <span>All Members</span>
+                  <span>{activeSection === "approvals" ? "Applications Awaiting Approval" : "All Database Members"}</span>
                 </div>
 
                 <div className="members-table-wrap">
                   {loading ? (
-                    <p className="admin-empty-state">Loading members...</p>
-                  ) : members.length === 0 ? (
-                    <p className="admin-empty-state">No members found.</p>
+                    <p className="admin-empty-state">Loading records...</p>
+                  ) : visibleMembers.length === 0 ? (
+                    <p className="admin-empty-state">{activeSection === "approvals" ? "No pending approvals." : "No members found."}</p>
                   ) : (
                     <div className="admin-member-list">
-                      {members.map((member) => (
+                      {visibleMembers.map((member) => (
                         <article className="admin-member-card" key={member.id}>
                           <div className="admin-member-grid">
                             <div className="admin-member-field">

@@ -42,7 +42,7 @@ export function MobileMemberLoginPage() {
           <img src={districtLogo} alt="District Grand Lodge of the Far East" />
           <img src={lodgeLogo} alt="Mt. Capistrano Masonic Lodge No. 23" />
         </div>
-        <p className="md-section-label">Member Portal</p>
+        <p className="md-section-label">The East Gate</p>
         <h1>Lodge Access</h1>
 
         <div className="auth-tabs">

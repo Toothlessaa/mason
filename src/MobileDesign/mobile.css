@@ -72,7 +72,7 @@
 
 .md-admin-tabs {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin-top: 18px;
 }
@@ -213,9 +213,12 @@
   border-radius: 20px;
 }
 
-.md-admin-media-wrap .inquiry-field-grid,
-.md-admin-media-wrap .admin-media-card {
+.md-admin-media-wrap .inquiry-field-grid {
   grid-template-columns: 1fr;
+}
+
+.md-admin-media-wrap .admin-media-card {
+  grid-template-columns: 56px minmax(0, 1fr);
 }
 
 .md-admin-media-wrap .admin-media-form,
@@ -224,7 +227,7 @@
 }
 
 .md-admin-media-wrap .admin-media-actions {
-  flex-direction: column;
+  grid-column: 1 / -1;
 }
 
 .md-header-bar,

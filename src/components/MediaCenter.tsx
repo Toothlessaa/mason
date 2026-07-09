@@ -1,13 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Camera, Film, Newspaper, X } from "lucide-react";
+import { Camera, ChevronLeft, ChevronRight, Film, Newspaper, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import firstPhoto from "../../fir.jpg";
-import fellowshipPhoto from "../../fellow2.jpg";
-import brotherhoodPhoto from "../../brotherhood.jpg";
-import milestonePhoto from "../../milestone.jpg";
-import secondPhoto from "../../s.jpg";
-import communityPhoto from "../../community.png";
-import charityPhoto from "../../charity.jpg";
 import { getPublishedMediaPosts, type MediaPost } from "../data/memberPortal";
 
 type MediaItem = {
@@ -18,75 +11,10 @@ type MediaItem = {
   accent: "gold" | "blue" | "violet";
   icon: typeof Camera;
   image: string;
+  images: string[];
 };
 
 const filters = ["All", "Ceremonies", "Community", "Brotherhood", "Announcements"];
-
-const fallbackMediaItems: MediaItem[] = [
-  {
-    title: "Installation of Officers",
-    category: "Ceremony",
-    date: "2026",
-    summary: "A dignified gathering honoring continuity, responsibility, and leadership.",
-    accent: "gold",
-    icon: Camera,
-    image: firstPhoto,
-  },
-  {
-    title: "Community Service in Bukidnon",
-    category: "Community",
-    date: "2026",
-    summary: "Brethren extending relief and visible service beyond the lodge room.",
-    accent: "blue",
-    icon: Newspaper,
-    image: communityPhoto,
-  },
-  {
-    title: "Fellowship Night",
-    category: "Brotherhood",
-    date: "2026",
-    summary: "A night of harmony, renewal, and fraternal connection.",
-    accent: "violet",
-    icon: Film,
-    image: fellowshipPhoto,
-  },
-  {
-    title: "Lodge Milestones",
-    category: "Announcement",
-    date: "2026",
-    summary: "Selected updates and milestones from Mt. Capistrano Masonic Lodge No. 23.",
-    accent: "gold",
-    icon: Newspaper,
-    image: milestonePhoto,
-  },
-  {
-    title: "Charity and Relief Work",
-    category: "Community",
-    date: "2026",
-    summary: "Documenting acts of service inspired by brotherly love and relief.",
-    accent: "blue",
-    icon: Camera,
-    image: charityPhoto,
-  },
-  {
-    title: "Ceremonial Highlights",
-    category: "Ceremony",
-    date: "2026",
-    summary: "Moments preserved with dignity, discretion, and institutional pride.",
-    accent: "violet",
-    icon: Film,
-    image: secondPhoto,
-  },
-  {
-    title: "Brotherhood in Action",
-    category: "Brotherhood",
-    date: "2026",
-    summary: "A visual record of fellowship, unity, and the bond shared among brethren.",
-    accent: "gold",
-    icon: Camera,
-    image: brotherhoodPhoto,
-  },
-];
 
 function getIconForCategory(category: string) {
   if (category === "Announcement") return Newspaper;
@@ -99,6 +27,8 @@ function getAccent(index: number): MediaItem["accent"] {
 }
 
 function mapMediaPost(post: MediaPost, index: number): MediaItem {
+  const images = post.image_urls?.length ? post.image_urls : [post.image_url].filter(Boolean);
+
   return {
     title: post.title,
     category: post.category,
@@ -106,7 +36,8 @@ function mapMediaPost(post: MediaPost, index: number): MediaItem {
     summary: post.summary,
     accent: getAccent(index),
     icon: getIconForCategory(post.category),
-    image: post.image_url,
+    image: images[0] || post.image_url,
+    images,
   };
 }
 
@@ -115,7 +46,7 @@ export function MediaCenter() {
   const [topStart, setTopStart] = useState(0);
   const [isTopPaused, setIsTopPaused] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null);
-  const [mediaItems, setMediaItems] = useState<MediaItem[]>(fallbackMediaItems);
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const topItems = mediaItems.slice(0, 3);
   const featured = topItems[topStart] || topItems[0];
   const highlights = topItems.filter((_, index) => index !== topStart).slice(0, 2);
@@ -180,7 +111,7 @@ export function MediaCenter() {
       </motion.div>
 
       <div className="media-feature-layout" onMouseEnter={() => setIsTopPaused(true)} onMouseLeave={() => setIsTopPaused(false)}>
-        <MediaCard key="featured-media-card" item={featured} variant="featured" index={0} onSelect={setSelectedItem} />
+        {featured ? <MediaCard key="featured-media-card" item={featured} variant="featured" index={0} onSelect={setSelectedItem} /> : null}
         <div className="media-highlight-stack">
           {highlights.filter(Boolean).map((item, index) => (
             <MediaCard key={`highlight-media-card-${index}`} item={item} variant="highlight" index={index + 1} onSelect={setSelectedItem} />
@@ -259,6 +190,45 @@ function MediaCard({
 }
 
 function MediaModal({ item, onClose }: { item: MediaItem; onClose: () => void }) {
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const images = item.images?.length ? item.images : [item.image].filter(Boolean);
+  const hasGallery = images.length > 1;
+
+  const showPreviousImage = () => {
+    if (!hasGallery) return;
+    setActiveImageIndex((current) => (current - 1 + images.length) % images.length);
+  };
+
+  const showNextImage = () => {
+    if (!hasGallery) return;
+    setActiveImageIndex((current) => (current + 1) % images.length);
+  };
+
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [item]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") showPreviousImage();
+      if (event.key === "ArrowRight") showNextImage();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [hasGallery, images.length]);
+
+  const handleTouchEnd = (clientX: number) => {
+    if (touchStartX === null) return;
+    const distance = touchStartX - clientX;
+    if (Math.abs(distance) > 45) {
+      if (distance > 0) showNextImage();
+      else showPreviousImage();
+    }
+    setTouchStartX(null);
+  };
+
   return (
     <motion.div
       className="media-modal-backdrop"
@@ -297,8 +267,27 @@ function MediaModal({ item, onClose }: { item: MediaItem; onClose: () => void })
             </p>
           </div>
 
-          <div className="media-modal-image-wrap">
-            <img className="media-modal-image" src={item.image} alt={item.title} />
+          <div
+            className="media-modal-image-wrap"
+            onTouchStart={(event) => setTouchStartX(event.touches[0]?.clientX ?? null)}
+            onTouchEnd={(event) => handleTouchEnd(event.changedTouches[0]?.clientX ?? 0)}
+          >
+            <div className="media-modal-image-track" style={{ transform: `translateX(-${activeImageIndex * 100}%)` }}>
+              {images.map((image, index) => (
+                <img className="media-modal-image" src={image} alt={`${item.title} ${index + 1}`} key={image} draggable={false} />
+              ))}
+            </div>
+            {hasGallery ? (
+              <>
+                <button className="media-gallery-button media-gallery-button-prev" type="button" aria-label="Previous image" onClick={(event) => { event.stopPropagation(); showPreviousImage(); }}>
+                  <ChevronLeft size={24} strokeWidth={1.8} />
+                </button>
+                <button className="media-gallery-button media-gallery-button-next" type="button" aria-label="Next image" onClick={(event) => { event.stopPropagation(); showNextImage(); }}>
+                  <ChevronRight size={24} strokeWidth={1.8} />
+                </button>
+                <div className="media-gallery-counter">{activeImageIndex + 1} / {images.length}</div>
+              </>
+            ) : null}
           </div>
         </div>
       </motion.div>
