@@ -1650,6 +1650,7 @@ svg {
 .media-modal {
   position: relative;
   width: min(1280px, calc(100% - 40px));
+  height: min(820px, calc(100dvh - 48px));
   max-height: calc(100dvh - 48px);
   border: 1px solid rgba(226, 196, 122, 0.24);
   border-radius: 32px;
@@ -1684,12 +1685,13 @@ svg {
 }
 
 .media-modal-content {
-  min-height: min(760px, calc(100dvh - 48px));
+  height: 100%;
 }
 
 .media-modal-image-wrap {
   position: relative;
-  min-height: min(760px, calc(100dvh - 48px));
+  height: 100%;
+  padding-bottom: 88px;
   overflow: hidden;
   touch-action: pan-y;
   user-select: none;
@@ -1713,7 +1715,6 @@ svg {
 .media-modal-image-track {
   display: flex;
   height: 100%;
-  min-height: min(760px, calc(100dvh - 48px));
   transition: transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
@@ -1732,7 +1733,10 @@ svg {
 .media-gallery-side-controls {
   position: absolute;
   z-index: 6;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 88px;
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -4556,30 +4560,18 @@ a.footer-contact-card:focus-visible {
     border-radius: 22px;
   }
 
-  .media-modal-content {
-    min-height: 0;
-  }
-
   .media-modal-image-wrap {
-    min-height: 300px;
+    padding-bottom: 78px;
   }
 
-  .media-modal-image-track {
-    min-height: 300px;
+  .media-gallery-side-controls {
+    bottom: 78px;
+    padding: 0 12px;
   }
 
   .media-gallery-button {
     width: 52px;
     height: 52px;
-  }
-
-  .media-gallery-side-controls {
-    padding: 0 12px;
-  }
-
-  .media-gallery-counter {
-    right: 12px;
-    bottom: 12px;
   }
 
   .media-modal-close {
