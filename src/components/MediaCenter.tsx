@@ -1,9 +1,10 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Camera, ChevronLeft, ChevronRight, Film, Newspaper, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { getPublishedMediaPosts, type MediaPost } from "../data/memberPortal";
+import { useEffect, useState, type MouseEvent } from "react";
+import { getMediaPostImageUrls, getPublishedMediaPosts, type MediaPost } from "../data/memberPortal";
 
 type MediaItem = {
+  id: string;
   title: string;
   category: string;
   date: string;
@@ -27,9 +28,10 @@ function getAccent(index: number): MediaItem["accent"] {
 }
 
 function mapMediaPost(post: MediaPost, index: number): MediaItem {
-  const images = post.image_urls?.length ? post.image_urls : [post.image_url].filter(Boolean);
+  const images = getMediaPostImageUrls(post);
 
   return {
+    id: post.id,
     title: post.title,
     category: post.category,
     date: post.date,
@@ -111,10 +113,10 @@ export function MediaCenter() {
       </motion.div>
 
       <div className="media-feature-layout" onMouseEnter={() => setIsTopPaused(true)} onMouseLeave={() => setIsTopPaused(false)}>
-        {featured ? <MediaCard key="featured-media-card" item={featured} variant="featured" index={0} onSelect={setSelectedItem} /> : null}
+        {featured ? <MediaCard key={featured.id} item={featured} variant="featured" index={0} onSelect={setSelectedItem} /> : null}
         <div className="media-highlight-stack">
           {highlights.filter(Boolean).map((item, index) => (
-            <MediaCard key={`highlight-media-card-${index}`} item={item} variant="highlight" index={index + 1} onSelect={setSelectedItem} />
+            <MediaCard key={item.id} item={item} variant="highlight" index={index + 1} onSelect={setSelectedItem} />
           ))}
         </div>
       </div>
@@ -129,7 +131,7 @@ export function MediaCenter() {
 
       <div className="media-grid">
         {gridItems.map((item, index) => (
-          <MediaCard key={item.title} item={item} variant="grid" index={index + 3} onSelect={setSelectedItem} />
+          <MediaCard key={item.id} item={item} variant="grid" index={index + 3} onSelect={setSelectedItem} />
         ))}
       </div>
 
@@ -152,6 +154,8 @@ function MediaCard({
   onSelect: (item: MediaItem) => void;
 }) {
   const Icon = item.icon;
+  const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
+  const hasLongSummary = item.summary.length > 170;
 
   return (
     <motion.article
@@ -176,6 +180,7 @@ function MediaCard({
         ) : (
           <Icon size={variant === "featured" ? 54 : 38} strokeWidth={1.2} />
         )}
+        {item.images.length > 1 ? <span className="media-card-photo-count">{item.images.length} photos</span> : null}
       </div>
       <div className="media-card-overlay">
         <div className="media-card-meta">
@@ -183,7 +188,20 @@ function MediaCard({
           <span>{item.date}</span>
         </div>
         <h3>{item.title}</h3>
-        <p>{item.summary}</p>
+        <p className={`media-card-summary${isSummaryExpanded ? " media-card-summary-expanded" : ""}`}>{item.summary}</p>
+        {hasLongSummary ? (
+          <button
+            className="media-card-summary-toggle"
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              setIsSummaryExpanded((current) => !current);
+            }}
+            onKeyDown={(event) => event.stopPropagation()}
+          >
+            {isSummaryExpanded ? "See less" : "See more"}
+          </button>
+        ) : null}
       </div>
     </motion.article>
   );
@@ -229,6 +247,16 @@ function MediaModal({ item, onClose }: { item: MediaItem; onClose: () => void })
     setTouchStartX(null);
   };
 
+  const handleImageAreaClick = (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    if (!hasGallery) return;
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const clickX = event.clientX - bounds.left;
+    if (clickX >= bounds.width / 2) showNextImage();
+    else showPreviousImage();
+  };
+
   return (
     <motion.div
       className="media-modal-backdrop"
@@ -243,7 +271,7 @@ function MediaModal({ item, onClose }: { item: MediaItem; onClose: () => void })
         className="media-modal"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="media-modal-title"
+        aria-label={item.title}
         initial={{ opacity: 0, y: 28, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 18, scale: 0.98 }}
@@ -255,20 +283,9 @@ function MediaModal({ item, onClose }: { item: MediaItem; onClose: () => void })
         </button>
 
         <div className="media-modal-content">
-          <div className="media-modal-copy">
-            <div className="media-card-meta">
-              <span>{item.category}</span>
-              <span>{item.date}</span>
-            </div>
-            <h3 id="media-modal-title">{item.title}</h3>
-            <p>{item.summary}</p>
-            <p>
-              This media entry preserves an important lodge moment with clarity, dignity, and respect for the work of the brethren.
-            </p>
-          </div>
-
           <div
-            className="media-modal-image-wrap"
+            className={`media-modal-image-wrap${hasGallery ? " is-clickable" : ""}`}
+            onClick={handleImageAreaClick}
             onTouchStart={(event) => setTouchStartX(event.touches[0]?.clientX ?? null)}
             onTouchEnd={(event) => handleTouchEnd(event.changedTouches[0]?.clientX ?? 0)}
           >
@@ -279,13 +296,31 @@ function MediaModal({ item, onClose }: { item: MediaItem; onClose: () => void })
             </div>
             {hasGallery ? (
               <>
-                <button className="media-gallery-button media-gallery-button-prev" type="button" aria-label="Previous image" onClick={(event) => { event.stopPropagation(); showPreviousImage(); }}>
-                  <ChevronLeft size={24} strokeWidth={1.8} />
-                </button>
-                <button className="media-gallery-button media-gallery-button-next" type="button" aria-label="Next image" onClick={(event) => { event.stopPropagation(); showNextImage(); }}>
-                  <ChevronRight size={24} strokeWidth={1.8} />
-                </button>
+                <div className="media-gallery-side-controls">
+                  <button className="media-gallery-button media-gallery-button-prev" type="button" aria-label="Previous image" onClick={(event) => { event.stopPropagation(); showPreviousImage(); }}>
+                    <ChevronLeft size={24} strokeWidth={1.8} />
+                  </button>
+                  <button className="media-gallery-button media-gallery-button-next" type="button" aria-label="Next image" onClick={(event) => { event.stopPropagation(); showNextImage(); }}>
+                    <ChevronRight size={24} strokeWidth={1.8} />
+                  </button>
+                </div>
                 <div className="media-gallery-counter">{activeImageIndex + 1} / {images.length}</div>
+                <div className="media-gallery-thumbnails" aria-label="Media gallery thumbnails" onClick={(event) => event.stopPropagation()}>
+                  {images.map((image, index) => (
+                    <button
+                      className={`media-gallery-thumbnail${activeImageIndex === index ? " is-active" : ""}`}
+                      type="button"
+                      aria-label={`Show image ${index + 1}`}
+                      key={`${image}-thumb-${index}`}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setActiveImageIndex(index);
+                      }}
+                    >
+                      <img src={image} alt="" draggable={false} />
+                    </button>
+                  ))}
+                </div>
               </>
             ) : null}
           </div>

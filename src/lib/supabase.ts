@@ -50,6 +50,30 @@ type MediaPostInput = {
   createdBy?: string;
 };
 
+function normalizeMediaArray(value: string[] | string | null | undefined) {
+  if (Array.isArray(value)) return value.filter(Boolean);
+  if (typeof value !== "string" || !value.trim()) return [];
+
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) return parsed.filter((item): item is string => typeof item === "string" && Boolean(item));
+  } catch {
+    // Some older data may be a plain URL string instead of a text array.
+  }
+
+  return [value].filter(Boolean);
+}
+
+export function getMediaPostImageUrls(post: MediaPost) {
+  const imageUrls = normalizeMediaArray(post.image_urls);
+  return imageUrls.length ? imageUrls : [post.image_url].filter(Boolean);
+}
+
+export function getMediaPostStoragePaths(post: MediaPost) {
+  const storagePaths = normalizeMediaArray(post.storage_paths);
+  return storagePaths.length ? storagePaths : [post.storage_path].filter((path): path is string => Boolean(path));
+}
+
 // --- Session management (localStorage) ---
 
 const SESSION_KEY = "masonic_session";
@@ -295,8 +319,8 @@ export async function updateMediaPost(post: MediaPost, input: MediaPostInput, im
     return { data: null, error: upload.error };
   }
 
-  const existingImageUrls = post.image_urls?.length ? post.image_urls : [post.image_url].filter(Boolean);
-  const existingStoragePaths = post.storage_paths?.length ? post.storage_paths : [post.storage_path].filter(Boolean) as string[];
+  const existingImageUrls = getMediaPostImageUrls(post);
+  const existingStoragePaths = getMediaPostStoragePaths(post);
   const imageUrls = [...existingImageUrls, ...(upload.imageUrls || [])];
   const storagePaths = [...existingStoragePaths, ...(upload.storagePaths || [])];
 
@@ -332,8 +356,44 @@ export async function updateMediaPostStatus(postId: string, status: MediaPostSta
   return { data: data as MediaPost | null, error };
 }
 
+export async function deleteMediaPostImage(post: MediaPost, imageIndex: number) {
+  const imageUrls = getMediaPostImageUrls(post);
+  const storagePaths = getMediaPostStoragePaths(post);
+
+  if (imageUrls.length <= 1) {
+    return { data: null, error: new Error("A media post must keep at least one image.") };
+  }
+
+  if (imageIndex < 0 || imageIndex >= imageUrls.length) {
+    return { data: null, error: new Error("Image not found.") };
+  }
+
+  const removedStoragePath = storagePaths[imageIndex];
+  const nextImageUrls = imageUrls.filter((_, index) => index !== imageIndex);
+  const nextStoragePaths = storagePaths.filter((_, index) => index !== imageIndex);
+
+  if (removedStoragePath) {
+    const { error: removeError } = await supabase.storage.from(MEDIA_BUCKET).remove([removedStoragePath]);
+    if (removeError) return { data: null, error: removeError };
+  }
+
+  const { data, error } = await supabase
+    .from("media_posts")
+    .update({
+      image_url: nextImageUrls[0],
+      image_urls: nextImageUrls,
+      storage_path: nextStoragePaths[0] || null,
+      storage_paths: nextStoragePaths,
+    })
+    .eq("id", post.id)
+    .select()
+    .single();
+
+  return { data: data as MediaPost | null, error };
+}
+
 export async function deleteMediaPost(post: MediaPost) {
-  const storagePaths = post.storage_paths?.length ? post.storage_paths : [post.storage_path].filter(Boolean) as string[];
+  const storagePaths = getMediaPostStoragePaths(post);
   if (storagePaths.length) {
     await supabase.storage.from(MEDIA_BUCKET).remove([...new Set(storagePaths)]);
   }

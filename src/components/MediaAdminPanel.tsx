@@ -3,7 +3,9 @@ import { Eye, EyeOff, ImagePlus, Pencil, RefreshCw, Trash2, Upload, X } from "lu
 import {
   createMediaPost,
   deleteMediaPost,
+  deleteMediaPostImage,
   getAllMediaPosts,
+  getMediaPostImageUrls,
   updateMediaPost,
   updateMediaPostStatus,
   type MediaPost,
@@ -23,8 +25,10 @@ export function MediaAdminPanel({ adminName }: { adminName: string }) {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [editingPost, setEditingPost] = useState<MediaPost | null>(null);
+  const [postPendingDelete, setPostPendingDelete] = useState<MediaPost | null>(null);
   const [selectedImagePreviews, setSelectedImagePreviews] = useState<SelectedImagePreview[]>([]);
   const [thumbnailIndex, setThumbnailIndex] = useState(0);
+  const editingPostImages = editingPost ? getMediaPostImageUrls(editingPost) : [];
 
   const loadMediaPosts = async () => {
     setLoading(true);
@@ -59,6 +63,23 @@ export function MediaAdminPanel({ adminName }: { adminName: string }) {
     setThumbnailIndex(0);
   };
 
+  const removeSelectedImagePreview = (imageIndex: number) => {
+    setSelectedImagePreviews((current) => {
+      const preview = current[imageIndex];
+      if (preview) URL.revokeObjectURL(preview.url);
+
+      const next = current.filter((_, index) => index !== imageIndex);
+      setThumbnailIndex((currentThumbnailIndex) => {
+        if (!next.length) return 0;
+        if (currentThumbnailIndex === imageIndex) return 0;
+        if (currentThumbnailIndex > imageIndex) return currentThumbnailIndex - 1;
+        return currentThumbnailIndex;
+      });
+
+      return next;
+    });
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSaving(true);
@@ -67,9 +88,7 @@ export function MediaAdminPanel({ adminName }: { adminName: string }) {
     const form = event.currentTarget;
     const formData = new FormData(form);
     const selectedImageFiles = selectedImagePreviews.map((preview) => preview.file).filter((file) => file.size > 0);
-    const imageFiles = selectedImageFiles.length
-      ? selectedImageFiles
-      : formData.getAll("images").filter((file): file is File => file instanceof File && file.size > 0);
+    const imageFiles = selectedImageFiles;
     const thumbnailFile = selectedImagePreviews[thumbnailIndex]?.file;
     const orderedImageFiles = thumbnailFile
       ? [thumbnailFile, ...imageFiles.filter((file) => file !== thumbnailFile)]
@@ -128,12 +147,40 @@ export function MediaAdminPanel({ adminName }: { adminName: string }) {
     await loadMediaPosts();
   };
 
-  const handleDelete = async (post: MediaPost) => {
-    if (!window.confirm(`Delete "${post.title}" from media?`)) return;
+  const handleDelete = async () => {
+    if (!postPendingDelete) return;
     setMessage("");
-    const { error } = await deleteMediaPost(post);
+    setSaving(true);
+    const { error } = await deleteMediaPost(postPendingDelete);
     if (error) setMessage(error.message);
+    else if (editingPost?.id === postPendingDelete.id) cancelEditing();
+    setPostPendingDelete(null);
     await loadMediaPosts();
+    setSaving(false);
+  };
+
+  const handleDeleteImage = async (imageIndex: number) => {
+    if (!editingPost) return;
+    if (editingPostImages.length <= 1) {
+      setMessage("A media post must keep at least one image. Delete the whole post instead.");
+      return;
+    }
+
+    if (!window.confirm("Delete this picture from the media post?")) return;
+
+    setSaving(true);
+    setMessage("");
+    const { data, error } = await deleteMediaPostImage(editingPost, imageIndex);
+    if (error) {
+      setMessage(error.message);
+      setSaving(false);
+      return;
+    }
+
+    if (data) setEditingPost(data);
+    setMessage("Picture deleted from media post.");
+    await loadMediaPosts();
+    setSaving(false);
   };
 
   return (
@@ -182,32 +229,45 @@ export function MediaAdminPanel({ adminName }: { adminName: string }) {
             <input name="images" type="file" accept="image/*" multiple required={!editingPost} onChange={handleImageSelection} />
           </label>
 
-          {!editingPost && selectedImagePreviews.length ? (
+          {selectedImagePreviews.length ? (
             <div className="admin-thumbnail-picker" aria-label="Choose post thumbnail">
               <div className="admin-thumbnail-picker-heading">
-                <span>Thumbnail</span>
-                <small>Select which uploaded image appears first on the website.</small>
+                <span>{editingPost ? `New Images To Add (${selectedImagePreviews.length})` : "Thumbnail"}</span>
+                <small>{editingPost ? "These pictures are not public yet. Click Update Media Post to save them." : "Select which uploaded image appears first on the website."}</small>
               </div>
               <div className="admin-thumbnail-grid">
                 {selectedImagePreviews.map((preview, index) => (
-                  <button
-                    className={`admin-thumbnail-option${thumbnailIndex === index ? " is-selected" : ""}`}
-                    type="button"
-                    key={`${preview.file.name}-${preview.file.lastModified}-${index}`}
-                    onClick={() => setThumbnailIndex(index)}
-                  >
-                    <img src={preview.url} alt={`Selected upload ${index + 1}`} />
-                    <span>{thumbnailIndex === index ? "Thumbnail" : "Set thumbnail"}</span>
-                  </button>
+                  <div className={`admin-thumbnail-option${thumbnailIndex === index ? " is-selected" : ""}`} key={`${preview.file.name}-${preview.file.lastModified}-${index}`}>
+                    <button className="admin-thumbnail-image-button" type="button" onClick={() => setThumbnailIndex(index)}>
+                      <img src={preview.url} alt={`Selected upload ${index + 1}`} />
+                      <span>{thumbnailIndex === index ? "Thumbnail" : "Set thumbnail"}</span>
+                    </button>
+                    <button className="admin-media-delete-button" type="button" onClick={() => removeSelectedImagePreview(index)}>
+                      <Trash2 size={14} /> Remove
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
           ) : null}
 
           {editingPost ? (
-            <p className="admin-media-message">
-              Current gallery: {(editingPost.image_urls?.length || (editingPost.image_url ? 1 : 0))} photo{(editingPost.image_urls?.length || 1) === 1 ? "" : "s"}. New uploads will be added to this post.
-            </p>
+            <div className="admin-current-gallery" aria-label="Current gallery pictures">
+              <div className="admin-thumbnail-picker-heading">
+                <span>Saved Gallery ({editingPostImages.length})</span>
+                <small>These are the pictures already saved and used by the public media modal.</small>
+              </div>
+              <div className="admin-thumbnail-grid">
+                {editingPostImages.map((image, index) => (
+                  <div className="admin-current-gallery-item" key={`${image}-${index}`}>
+                    <img src={image} alt={`${editingPost.title} ${index + 1}`} />
+                    <button type="button" className="admin-media-delete-button" disabled={saving || editingPostImages.length <= 1} onClick={() => handleDeleteImage(index)}>
+                      <Trash2 size={14} /> Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
           ) : null}
 
           {message ? <p className="admin-media-message">{message}</p> : null}
@@ -244,6 +304,7 @@ export function MediaAdminPanel({ adminName }: { adminName: string }) {
                 <img src={post.image_url} alt={post.title} />
                 <div className="admin-media-card-copy">
                   <h3>{post.title}</h3>
+                  <small>{getMediaPostImageUrls(post).length} saved photo{getMediaPostImageUrls(post).length === 1 ? "" : "s"}</small>
                 </div>
                 <div className="admin-media-actions">
                   <button type="button" className="admin-media-edit-button" onClick={() => startEditing(post)}>
@@ -258,7 +319,7 @@ export function MediaAdminPanel({ adminName }: { adminName: string }) {
                       <Eye size={16} /> Publish
                     </button>
                   )}
-                  <button type="button" className="admin-media-delete-button" onClick={() => handleDelete(post)}>
+                  <button type="button" className="admin-media-delete-button" onClick={() => setPostPendingDelete(post)}>
                     <Trash2 size={16} /> Delete
                   </button>
                 </div>
@@ -267,6 +328,31 @@ export function MediaAdminPanel({ adminName }: { adminName: string }) {
           </div>
         )}
       </div>
+
+      {postPendingDelete ? (
+        <div className="admin-delete-modal-backdrop" role="presentation" onClick={() => setPostPendingDelete(null)}>
+          <div className="admin-delete-modal" role="dialog" aria-modal="true" aria-labelledby="admin-delete-media-title" onClick={(event) => event.stopPropagation()}>
+            <button className="admin-delete-modal-close" type="button" aria-label="Cancel delete" onClick={() => setPostPendingDelete(null)}>
+              <X size={18} />
+            </button>
+            <div className="admin-delete-modal-icon">
+              <Trash2 size={28} strokeWidth={1.8} />
+            </div>
+            <h3 id="admin-delete-media-title">Delete media post?</h3>
+            <p>
+              This will permanently delete <strong>{postPendingDelete.title}</strong> and remove its saved pictures from media storage.
+            </p>
+            <div className="admin-delete-modal-actions">
+              <button type="button" className="admin-media-cancel-button" disabled={saving} onClick={() => setPostPendingDelete(null)}>
+                Cancel
+              </button>
+              <button type="button" className="admin-media-delete-button" disabled={saving} onClick={handleDelete}>
+                <Trash2 size={16} /> {saving ? "Deleting..." : "Delete Post"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

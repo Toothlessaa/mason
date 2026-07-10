@@ -14,8 +14,11 @@ export {
   updateMemberStatus,
   getPublishedMediaPosts,
   getAllMediaPosts,
+  getMediaPostImageUrls,
+  getMediaPostStoragePaths,
   createMediaPost,
   updateMediaPost,
+  deleteMediaPostImage,
   updateMediaPostStatus,
   deleteMediaPost,
 } from "../lib/supabase";
