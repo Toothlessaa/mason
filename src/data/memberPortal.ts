@@ -1,6 +1,7 @@
 export { supabase } from "../lib/supabase";
 export type { MemberProfile } from "../lib/supabase";
 export type { MediaPost, MediaPostStatus } from "../lib/supabase";
+export type { LeadershipSlide, LeadershipSlideStatus } from "../lib/supabase";
 export {
   signIn,
   adminSignIn,
@@ -21,4 +22,10 @@ export {
   deleteMediaPostImage,
   updateMediaPostStatus,
   deleteMediaPost,
+  getPublishedLeadershipSlides,
+  getAllLeadershipSlides,
+  createLeadershipSlides,
+  updateLeadershipSlideStatus,
+  updateLeadershipSlideSortOrder,
+  deleteLeadershipSlide,
 } from "../lib/supabase";

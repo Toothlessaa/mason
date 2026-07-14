@@ -1,6 +1,7 @@
 import { ArrowRight, Compass, HandHeart, PlayCircle, Users } from "lucide-react";
 import { BackgroundEffects } from "../components/BackgroundEffects";
 import { GrandmasterMessage } from "../components/GrandmasterMessage";
+import { LeadershipPhotoSlideshow } from "../components/LeadershipPhotoSlideshow";
 import { MediaCenter } from "../components/MediaCenter";
 import { ThreeLights } from "../components/ThreeLights";
 import grandPortrait from "../../grandmaster.png";
@@ -68,6 +69,10 @@ export function MobileHome() {
 
       <div className="md-three-lights-wrap" id="leadership">
         <ThreeLights />
+      </div>
+
+      <div className="md-leadership-slideshow-wrap">
+        <LeadershipPhotoSlideshow />
       </div>
 
       <div className="md-media-center-wrap">

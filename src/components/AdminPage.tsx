@@ -4,13 +4,14 @@ import districtLogo from "../../logo.jpeg";
 import lodgeLogo from "../../logo1.jpg";
 import { signOut, getAdminSession, getAllMembers, updateMemberStatus, type MemberProfile } from "../data/memberPortal";
 import { MediaAdminPanel } from "./MediaAdminPanel";
+import { LeadershipSlideshowAdminPanel } from "./LeadershipSlideshowAdminPanel";
 
 export function AdminPage() {
   const [authorized, setAuthorized] = useState(false);
   const [members, setMembers] = useState<MemberProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [sessionName, setSessionName] = useState("");
-  const [activeSection, setActiveSection] = useState<"approvals" | "members" | "media">("approvals");
+  const [activeSection, setActiveSection] = useState<"approvals" | "members" | "slideshow" | "media">("approvals");
 
   const loadMembers = async () => {
     setLoading(true);
@@ -52,12 +53,14 @@ export function AdminPage() {
   const activeCount = members.filter((m) => m.status === "Active").length;
   const visibleMembers = activeSection === "approvals" ? members.filter((member) => member.status === "Pending") : members;
   const isMemberSection = activeSection === "approvals" || activeSection === "members";
-  const pageTitle = activeSection === "approvals" ? "Pending Approvals" : activeSection === "members" ? "Members Database" : "Media Management";
+  const pageTitle = activeSection === "approvals" ? "Pending Approvals" : activeSection === "members" ? "Members Database" : activeSection === "slideshow" ? "Leadership Slideshow" : "Media Management";
   const pageIntro = activeSection === "approvals"
     ? "Review new lodge applications before they enter the member database."
     : activeSection === "members"
       ? "Browse every member record currently stored in the database."
-      : "Upload media posts as drafts or publish them to the public website.";
+      : activeSection === "slideshow"
+        ? "Upload the moving pictures shown between The Three Lights and Media."
+        : "Upload media posts as drafts or publish them to the public website.";
 
   return (
     <section className="admin-dashboard-page">
@@ -81,6 +84,9 @@ export function AdminPage() {
             </button>
             <button type="button" className={activeSection === "media" ? "is-active" : undefined} onClick={() => setActiveSection("media")}>
               <Images size={18} strokeWidth={1.8} /> Media
+            </button>
+            <button type="button" className={activeSection === "slideshow" ? "is-active" : undefined} onClick={() => setActiveSection("slideshow")}>
+              <Images size={18} strokeWidth={1.8} /> Slideshow
             </button>
           </nav>
 
@@ -199,6 +205,8 @@ export function AdminPage() {
                 </div>
               </div>
             </>
+          ) : activeSection === "slideshow" ? (
+            <LeadershipSlideshowAdminPanel adminName={sessionName} />
           ) : (
             <MediaAdminPanel adminName={sessionName} />
           )}

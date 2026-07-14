@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { AnthemSection } from "./AnthemSection";
 import { GrandmasterMessage } from "./GrandmasterMessage";
 import { ThreeLights } from "./ThreeLights";
+import { LeadershipPhotoSlideshow } from "./LeadershipPhotoSlideshow";
 import { MediaCenter } from "./MediaCenter";
 import { Footer } from "./Footer";
 import { SectionBreaker } from "./SectionBreaker";
@@ -125,6 +126,10 @@ export function Hero() {
       <SectionBreaker />
 
       <ThreeLights />
+
+      <SectionBreaker />
+
+      <LeadershipPhotoSlideshow />
 
       <SectionBreaker />
 

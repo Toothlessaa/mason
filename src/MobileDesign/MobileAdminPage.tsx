@@ -4,13 +4,14 @@ import districtLogo from "../../logo.jpeg";
 import lodgeLogo from "../../logo1.jpg";
 import { signOut, getAdminSession, getAllMembers, updateMemberStatus, type MemberProfile } from "../data/memberPortal";
 import { MediaAdminPanel } from "../components/MediaAdminPanel";
+import { LeadershipSlideshowAdminPanel } from "../components/LeadershipSlideshowAdminPanel";
 
 export function MobileAdminPage() {
   const [authorized, setAuthorized] = useState(false);
   const [members, setMembers] = useState<MemberProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [sessionName, setSessionName] = useState("");
-  const [activeSection, setActiveSection] = useState<"approvals" | "members" | "media">("approvals");
+  const [activeSection, setActiveSection] = useState<"approvals" | "members" | "slideshow" | "media">("approvals");
 
   const loadMembers = async () => {
     setLoading(true);
@@ -52,12 +53,14 @@ export function MobileAdminPage() {
   const activeCount = members.filter((m) => m.status === "Active").length;
   const visibleMembers = activeSection === "approvals" ? members.filter((member) => member.status === "Pending") : members;
   const isMemberSection = activeSection === "approvals" || activeSection === "members";
-  const pageTitle = activeSection === "approvals" ? "Approvals" : activeSection === "members" ? "Members" : "Media";
+  const pageTitle = activeSection === "approvals" ? "Approvals" : activeSection === "members" ? "Members" : activeSection === "slideshow" ? "Slideshow" : "Media";
   const pageIntro = activeSection === "approvals"
     ? "Review pending applications before they enter the member database."
     : activeSection === "members"
       ? "View all member records from the database."
-      : "Upload and publish media for the public website.";
+      : activeSection === "slideshow"
+        ? "Upload moving pictures shown between The Three Lights and Media."
+        : "Upload and publish media for the public website.";
 
   return (
     <section className="md-members-page">
@@ -88,6 +91,9 @@ export function MobileAdminPage() {
           </button>
           <button type="button" className={activeSection === "media" ? "is-active" : undefined} onClick={() => setActiveSection("media")}>
             <Images size={16} /> Media
+          </button>
+          <button type="button" className={activeSection === "slideshow" ? "is-active" : undefined} onClick={() => setActiveSection("slideshow")}>
+            <Images size={16} /> Slides
           </button>
         </div>
       </div>
@@ -135,6 +141,10 @@ export function MobileAdminPage() {
             )}
           </div>
         </>
+      ) : activeSection === "slideshow" ? (
+        <div className="md-admin-media-wrap">
+          <LeadershipSlideshowAdminPanel adminName={sessionName} />
+        </div>
       ) : (
         <div className="md-admin-media-wrap">
           <MediaAdminPanel adminName={sessionName} />

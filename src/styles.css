@@ -1063,6 +1063,7 @@ svg {
 .overview-section,
 .gm-message-section,
 .three-lights-section,
+.leadership-slideshow-section,
 .media-center-section,
 .faq-section,
 .site-footer {
@@ -1357,6 +1358,161 @@ svg {
 .tl-dot-active {
   background: var(--gold-500);
   border-color: var(--gold-500);
+}
+
+.leadership-slideshow-section {
+  position: relative;
+  width: 100%;
+  padding: 20px 0 104px;
+  overflow: hidden;
+}
+
+.leadership-slideshow-section::before {
+  position: absolute;
+  inset: 15% 0 auto;
+  height: 340px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(226, 196, 122, 0.1), transparent 48%),
+    radial-gradient(circle at 80% 30%, rgba(61, 117, 255, 0.14), transparent 42%);
+  content: "";
+  pointer-events: none;
+}
+
+.leadership-slideshow-heading {
+  position: relative;
+  z-index: 1;
+  width: min(1440px, calc(100% - 32px));
+  margin: 0 auto 36px;
+}
+
+.leadership-slideshow-heading h2 {
+  max-width: 760px;
+  margin: 20px 0 0;
+  font-family: "Cinzel", serif;
+  font-size: clamp(2rem, 3.6vw, 3.55rem);
+  line-height: 1.04;
+}
+
+.leadership-slideshow-stage-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  --slide-card-width: clamp(250px, 18.6vw, 352px);
+  --slide-center-width: clamp(325px, 25.2vw, 482px);
+  --slide-card-height: clamp(170px, 13vw, 248px);
+  --slide-center-height: clamp(230px, 18.2vw, 348px);
+  --slide-gap: clamp(2px, 0.55vw, 10px);
+  --slide-step: calc((var(--slide-center-width) + var(--slide-card-width)) / 2 + var(--slide-gap));
+  padding: 18px 0 0;
+  overflow: hidden;
+  border-top: 1px solid rgba(226, 196, 122, 0.13);
+  border-bottom: 1px solid rgba(226, 196, 122, 0.13);
+  background:
+    radial-gradient(circle at 50% 24%, rgba(226, 196, 122, 0.16), transparent 30%),
+    radial-gradient(circle at 90% 0%, rgba(61, 117, 255, 0.16), transparent 34%),
+    linear-gradient(90deg, rgba(2, 7, 18, 0.98), rgba(7, 22, 46, 0.8) 48%, rgba(2, 7, 18, 0.98));
+}
+
+.leadership-slideshow-stage {
+  position: relative;
+  width: 100%;
+  height: clamp(360px, 33vw, 540px);
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
+.leadership-slide-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: fit-content;
+  max-width: var(--slide-card-width);
+  height: var(--slide-card-height);
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(226, 196, 122, 0.34);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(226, 196, 122, 0.08), transparent 48%),
+    rgba(2, 7, 18, 0.72);
+  box-shadow: 0 24px 74px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  opacity: 0.78;
+  transition:
+    transform 780ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 780ms cubic-bezier(0.16, 1, 0.3, 1),
+    width 780ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 780ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 780ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.leadership-slide-card.is-center {
+  z-index: 5;
+  max-width: var(--slide-center-width);
+  height: var(--slide-center-height);
+  border-color: rgba(226, 196, 122, 0.88);
+  opacity: 1;
+  box-shadow: 0 0 32px rgba(226, 196, 122, 0.36), 0 30px 90px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.leadership-slide-card.is-near-left {
+  z-index: 4;
+  transform: translate(calc(-50% - var(--slide-step)), -50%) rotate(-2deg) scale(0.86);
+}
+
+.leadership-slide-card.is-near-right {
+  z-index: 4;
+  transform: translate(calc(-50% + var(--slide-step)), -50%) rotate(2deg) scale(0.86);
+}
+
+.leadership-slide-card.is-far-left {
+  z-index: 3;
+  opacity: 0.58;
+  transform: translate(calc(-50% - (var(--slide-step) * 2)), -50%) rotate(2.6deg) scale(0.72);
+}
+
+.leadership-slide-card.is-far-right {
+  z-index: 3;
+  opacity: 0.58;
+  transform: translate(calc(-50% + (var(--slide-step) * 2)), -50%) rotate(-2.6deg) scale(0.72);
+}
+
+.leadership-slide-card img {
+  display: block;
+  width: auto;
+  max-width: var(--slide-card-width);
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1), filter 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.leadership-slide-card:hover img {
+  transform: scale(1.06);
+  filter: saturate(1.08) contrast(1.04);
+}
+
+.leadership-slide-card.is-center img {
+  max-width: var(--slide-center-width);
+}
+
+.leadership-slideshow-action {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  justify-content: center;
+  padding: 10px 16px 38px;
+}
+
+.leadership-slideshow-button {
+  min-width: 230px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leadership-slide-card {
+    transition: none;
+  }
 }
 
 .media-center-section {
@@ -3286,6 +3442,31 @@ a.footer-contact-card:focus-visible {
   color: #ef4444;
 }
 
+.admin-media-publish-button:disabled,
+.admin-media-draft-button:disabled,
+.admin-media-delete-button:disabled,
+.admin-media-edit-button:disabled,
+.admin-media-cancel-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.leadership-upload-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 220px);
+}
+
+.leadership-slide-admin-list {
+  max-height: 560px;
+}
+
+.leadership-slide-admin-card img {
+  height: 58px;
+}
+
+.leadership-slide-actions {
+  max-width: 420px;
+}
+
 .admin-delete-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -3741,11 +3922,12 @@ a.footer-contact-card:focus-visible {
   .become-member-reasons,
   .become-member-cta,
   .overview-section,
-  .faq-section,
-  .anthem-section,
-  .gm-message-section,
-  .three-lights-section,
-  .media-center-section,
+    .faq-section,
+    .anthem-section,
+    .gm-message-section,
+    .three-lights-section,
+    .leadership-slideshow-heading,
+    .media-center-section,
   .site-footer,
   .mobile-menu {
     width: calc(100% - 16px);
@@ -4099,6 +4281,7 @@ a.footer-contact-card:focus-visible {
   .overview-heading h2,
   .gm-message-text h2,
   .three-lights-heading h2,
+  .leadership-slideshow-heading h2,
   .media-center-heading h2,
   .faq-heading h2,
   .footer-brand-block h2 {
@@ -4132,9 +4315,48 @@ a.footer-contact-card:focus-visible {
 
   .gm-message-section,
   .three-lights-section,
+  .leadership-slideshow-section,
   .media-center-section,
   .faq-section {
     padding-bottom: 64px;
+  }
+
+  .leadership-slideshow-heading {
+    width: calc(100% - 24px);
+    margin-bottom: 24px;
+  }
+
+  .leadership-slideshow-stage-wrap {
+    --slide-card-width: min(270px, 38vw);
+    --slide-center-width: min(360px, 54vw);
+    --slide-card-height: min(205px, 28vw);
+    --slide-center-height: min(275px, 38vw);
+    --slide-gap: 20px;
+    padding-top: 12px;
+  }
+
+  .leadership-slideshow-stage {
+    height: 380px;
+  }
+
+  .leadership-slide-card {
+    border-radius: 22px;
+  }
+
+  .leadership-slide-card.is-near-left {
+    transform: translate(calc(-50% - var(--slide-step)), -50%) rotate(-2deg) scale(0.82);
+  }
+
+  .leadership-slide-card.is-near-right {
+    transform: translate(calc(-50% + var(--slide-step)), -50%) rotate(2deg) scale(0.82);
+  }
+
+  .leadership-slide-card.is-far-left {
+    transform: translate(calc(-50% - (var(--slide-step) * 2)), -50%) rotate(2.4deg) scale(0.68);
+  }
+
+  .leadership-slide-card.is-far-right {
+    transform: translate(calc(-50% + (var(--slide-step) * 2)), -50%) rotate(-2.4deg) scale(0.68);
   }
 
   .gm-message-layout {
@@ -4511,6 +4733,57 @@ a.footer-contact-card:focus-visible {
 
   .three-lights-section {
     padding: 40px 0 72px;
+  }
+
+  .leadership-slideshow-section {
+    padding: 18px 0 72px;
+  }
+
+  .leadership-slideshow-heading {
+    margin-bottom: 20px;
+  }
+
+  .leadership-slideshow-stage-wrap {
+    --slide-card-width: 58vw;
+    --slide-center-width: min(320px, 78vw);
+    --slide-card-height: min(190px, 40vw);
+    --slide-center-height: min(255px, 58vw);
+    --slide-gap: 10px;
+    padding-top: 8px;
+  }
+
+  .leadership-slideshow-stage {
+    height: 330px;
+  }
+
+  .leadership-slide-card {
+    border-radius: 20px;
+  }
+
+  .leadership-slide-card.is-center {
+    transform: translate(-50%, -50%) rotate(1deg);
+  }
+
+  .leadership-slide-card.is-near-left {
+    transform: translate(calc(-50% - var(--slide-step)), -50%) rotate(-2deg) scale(0.72);
+  }
+
+  .leadership-slide-card.is-near-right {
+    transform: translate(calc(-50% + var(--slide-step)), -50%) rotate(2deg) scale(0.72);
+  }
+
+  .leadership-slide-card.is-far-left,
+  .leadership-slide-card.is-far-right {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .leadership-slideshow-action {
+    padding-bottom: 28px;
+  }
+
+  .leadership-slideshow-button {
+    width: min(100%, 280px);
   }
 
   .tl-track {
