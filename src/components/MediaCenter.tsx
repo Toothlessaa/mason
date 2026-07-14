@@ -17,6 +17,12 @@ type MediaItem = {
 
 const filters = ["All", "Ceremonies", "Community", "Brotherhood", "Announcements"];
 
+function getFilterCategory(filter: string) {
+  if (filter === "Ceremonies") return "Ceremony";
+  if (filter === "Announcements") return "Announcement";
+  return filter;
+}
+
 function getIconForCategory(category: string) {
   if (category === "Announcement") return Newspaper;
   if (category === "Brotherhood") return Film;
@@ -49,10 +55,15 @@ export function MediaCenter() {
   const [isTopPaused, setIsTopPaused] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
-  const topItems = mediaItems.slice(0, 3);
+  const [selectedFilter, setSelectedFilter] = useState("All");
+  const selectedCategory = getFilterCategory(selectedFilter).toLowerCase();
+  const filteredMediaItems = selectedFilter === "All"
+    ? mediaItems
+    : mediaItems.filter((item) => item.category.toLowerCase() === selectedCategory);
+  const topItems = filteredMediaItems.slice(0, 3);
   const featured = topItems[topStart] || topItems[0];
   const highlights = topItems.filter((_, index) => index !== topStart).slice(0, 2);
-  const gridItems = mediaItems.slice(3);
+  const gridItems = filteredMediaItems.slice(3);
 
   useEffect(() => {
     let active = true;
@@ -70,6 +81,10 @@ export function MediaCenter() {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    setTopStart(0);
+  }, [selectedFilter]);
 
   useEffect(() => {
     if (topItems.length < 2 || reduceMotion || isTopPaused || selectedItem) return;
@@ -112,28 +127,39 @@ export function MediaCenter() {
         </p>
       </motion.div>
 
-      <div className="media-feature-layout" onMouseEnter={() => setIsTopPaused(true)} onMouseLeave={() => setIsTopPaused(false)}>
-        {featured ? <MediaCard key={featured.id} item={featured} variant="featured" index={0} onSelect={setSelectedItem} /> : null}
-        <div className="media-highlight-stack">
-          {highlights.filter(Boolean).map((item, index) => (
-            <MediaCard key={item.id} item={item} variant="highlight" index={index + 1} onSelect={setSelectedItem} />
-          ))}
-        </div>
-      </div>
-
       <div className="media-filter-bar" aria-label="Media categories">
-        {filters.map((filter, index) => (
-          <button key={filter} className={`media-filter-button${index === 0 ? " media-filter-active" : ""}`} type="button">
+        {filters.map((filter) => (
+          <button
+            key={filter}
+            className={`media-filter-button${selectedFilter === filter ? " media-filter-active" : ""}`}
+            type="button"
+            onClick={() => setSelectedFilter(filter)}
+          >
             {filter}
           </button>
         ))}
       </div>
 
-      <div className="media-grid">
-        {gridItems.map((item, index) => (
-          <MediaCard key={item.id} item={item} variant="grid" index={index + 3} onSelect={setSelectedItem} />
-        ))}
-      </div>
+      {filteredMediaItems.length ? (
+        <>
+          <div className="media-feature-layout" onMouseEnter={() => setIsTopPaused(true)} onMouseLeave={() => setIsTopPaused(false)}>
+            {featured ? <MediaCard key={featured.id} item={featured} variant="featured" index={0} onSelect={setSelectedItem} /> : null}
+            <div className="media-highlight-stack">
+              {highlights.filter(Boolean).map((item, index) => (
+                <MediaCard key={item.id} item={item} variant="highlight" index={index + 1} onSelect={setSelectedItem} />
+              ))}
+            </div>
+          </div>
+
+          <div className="media-grid">
+            {gridItems.map((item, index) => (
+              <MediaCard key={item.id} item={item} variant="grid" index={index + 3} onSelect={setSelectedItem} />
+            ))}
+          </div>
+        </>
+      ) : (
+        <p className="media-empty-state">No published media found for {selectedFilter}.</p>
+      )}
 
       <AnimatePresence>
         {selectedItem ? <MediaModal item={selectedItem} onClose={() => setSelectedItem(null)} /> : null}

@@ -4,6 +4,44 @@ import { getPublishedLeadershipSlides, type LeadershipSlide } from "../data/memb
 import { GoldButton } from "./GoldButton";
 
 const slideOffsets = [-2, -1, 0, 1, 2];
+const tickerText = "District Grand Lodge of the Far East, Philippine Islands";
+const tickerFlags = [
+  { code: "ph", label: "Philippines" },
+  { code: "br", label: "Brazil" },
+  { code: "pt", label: "Portugal" },
+  { code: "us", label: "USA" },
+  { code: "ru", label: "Russia" },
+  { code: "my", label: "Malaysia" },
+  { code: "sg", label: "Singapore" },
+  { code: "de", label: "Germany" },
+  { code: "eg", label: "Egypt" },
+  { code: "hr", label: "Croatia" },
+  { code: "kz", label: "Kazakhstan" },
+  { code: "es", label: "Spain" },
+  { code: "it", label: "Italy" },
+  { code: "fr", label: "France" },
+  { code: "ba", label: "Bosnia" },
+  { code: "cy", label: "Cyprus" },
+  { code: "at", label: "Austria" },
+  { code: "xk", label: "Kosovo" },
+  { code: "rs", label: "Serbia" },
+  { code: "by", label: "Belarus" },
+  { code: "tr", label: "Turkey" },
+  { code: "md", label: "Moldova" },
+  { code: "gr", label: "Greece" },
+  { code: "gb-eng", label: "England" },
+  { code: "lv", label: "Latvia" },
+  { code: "dk", label: "Denmark" },
+  { code: "al", label: "Albania" },
+  { code: "am", label: "Armenia" },
+  { code: "az", label: "Azerbaijan" },
+  { code: "mt", label: "Malta" },
+  { code: "ie", label: "Ireland" },
+  { code: "gb-sct", label: "Scotland" },
+  { code: "si", label: "Slovenia" },
+  { code: "ad", label: "Andorra" },
+  { code: "mx", label: "Mexico" },
+];
 
 function getSlideAtOffset(slides: LeadershipSlide[], activeIndex: number, offset: number) {
   const index = (activeIndex + offset + slides.length) % slides.length;
@@ -65,6 +103,21 @@ export function LeadershipPhotoSlideshow() {
         <p className="section-label">Gallery</p>
         <h2>Brethren Across the Globe</h2>
       </motion.div>
+
+      <div className="leadership-slideshow-ticker" aria-label={tickerText}>
+        <div className="leadership-slideshow-ticker-track" aria-hidden="true">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <span className="leadership-slideshow-ticker-group" key={index}>
+              <span className="leadership-slideshow-ticker-title">{tickerText}</span>
+              <span className="leadership-slideshow-flag-row">
+                {tickerFlags.map((flag) => (
+                  <img key={`${index}-${flag.code}`} src={`https://flagcdn.com/${flag.code}.svg`} alt="" loading="lazy" />
+                ))}
+              </span>
+            </span>
+          ))}
+        </div>
+      </div>
 
       <div className="leadership-slideshow-stage-wrap">
         <div className="leadership-slideshow-stage">

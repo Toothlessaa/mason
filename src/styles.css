@@ -1393,6 +1393,65 @@ svg {
   line-height: 1.04;
 }
 
+.leadership-slideshow-ticker {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  overflow: hidden;
+  border-top: 1px solid rgba(226, 196, 122, 0.18);
+  border-bottom: 1px solid rgba(226, 196, 122, 0.18);
+  background: #ef1f2d;
+  color: #fff;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.leadership-slideshow-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: leadershipTickerMove 86s linear infinite;
+  will-change: transform;
+}
+
+.leadership-slideshow-ticker-group {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(18px, 2vw, 34px);
+  padding: 9px clamp(28px, 4vw, 72px);
+  white-space: nowrap;
+}
+
+.leadership-slideshow-ticker-title {
+  font-size: clamp(0.9rem, 1.35vw, 1.25rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.leadership-slideshow-flag-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.leadership-slideshow-flag-row img {
+  display: block;
+  width: clamp(28px, 2.1vw, 38px);
+  height: clamp(19px, 1.42vw, 26px);
+  border-radius: 4px;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.34), 0 5px 13px rgba(0, 0, 0, 0.24);
+}
+
+@keyframes leadershipTickerMove {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
 .leadership-slideshow-stage-wrap {
   position: relative;
   z-index: 1;
@@ -1510,6 +1569,10 @@ svg {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .leadership-slideshow-ticker-track {
+    animation: none;
+  }
+
   .leadership-slide-card {
     transition: none;
   }
@@ -1787,6 +1850,17 @@ svg {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
+}
+
+.media-empty-state {
+  margin: 0;
+  padding: 42px 22px;
+  border: 1px solid rgba(226, 196, 122, 0.14);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(217, 224, 237, 0.72);
+  font-size: 0.96rem;
+  text-align: center;
 }
 
 .media-modal-backdrop {
