@@ -41,7 +41,7 @@ export function Hero() {
               <span className="hero-kicker">Welcome to a lodge where tradition meets service and leadership.</span>
               <h1>
                 <span>BROTHERHOOD</span>
-                <em>BEYOND BORDERS.</em>
+                <em>BEYOND BORDERS</em>
               </h1>
               <p className="hero-body">
                 Welcome to Mt. Capistrano Masonic Lodge No. 23, where tradition meets service and leadership.
