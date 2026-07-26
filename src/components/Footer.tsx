@@ -31,7 +31,7 @@ export function Footer() {
             </a>
             <div className="footer-contact-card">
               <MapPin size={22} strokeWidth={1.6} />
-              <span>Valley of Bukidnon</span>
+              <span>Valley of Bukidnon, Philippines</span>
             </div>
           </div>
         </div>

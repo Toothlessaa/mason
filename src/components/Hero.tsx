@@ -13,10 +13,12 @@ import { GoldButton } from "./GoldButton";
 import { FAQ } from "./FAQ";
 
 const placeholderSections = [
-  { id: "about", title: "About", body: "Tradition guided by relevance, dignity and visible service in the Valley of Bukidnon." },
-  { id: "leadership", title: "Leadership", body: "Principled stewardship with a clear public identity and disciplined internal culture." },
-  { id: "media-center", title: "Media", body: "Ceremonies, milestones and community works presented with clarity and discretion." },
-  { id: "contact", title: "Contact", body: "Open channels for civic engagement, inquiries and appropriate fraternity correspondence." },
+  { id: "about", title: "About", href: "#about", body: "Tradition guided by relevance, dignity and visible service in the Valley of Bukidnon." },
+  { id: "leadership", title: "Leadership", href: "#leadership", body: "Principled stewardship with a clear public identity and disciplined internal culture." },
+  { id: "media-center", title: "Media", href: "#media-center", body: "Ceremonies, milestones and community works presented with clarity and discretion." },
+  { id: "ebooks", title: "Ebooks", href: "#media-center", body: "Digital references and readings prepared for brethren, visitors, and sincere seekers." },
+  { id: "souvenir", title: "Souvenir", href: "#media-center", body: "Commemorative materials and keepsakes celebrating Lodge milestones and fellowship." },
+  { id: "contact", title: "Contact", href: "#contact", body: "Open channels for civic engagement, inquiries and appropriate fraternity correspondence." },
 ];
 
 export function Hero() {
@@ -76,7 +78,7 @@ export function Hero() {
             <motion.a
               key={section.id}
               className="overview-card"
-              href={section.id === "become-a-member" ? "/become-a-member" : `#${section.id}`}
+              href={section.href}
               initial={reduceMotion ? false : { opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
