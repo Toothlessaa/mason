@@ -10,9 +10,7 @@ import { SectionBreaker } from "./SectionBreaker";
 import { BackgroundEffects } from "./BackgroundEffects";
 import { FeatureCards } from "./FeatureCards";
 import { GoldButton } from "./GoldButton";
-import { GrandmasterCard } from "./GrandmasterCard";
 import { FAQ } from "./FAQ";
-import grandPortrait from "../../grandmaster.png";
 
 const placeholderSections = [
   { id: "about", title: "About", body: "Tradition guided by relevance, dignity and visible service in the Valley of Bukidnon." },
@@ -56,30 +54,6 @@ export function Hero() {
               </div>
             </motion.div>
 
-            <motion.div
-              className="hero-visual"
-              initial={reduceMotion ? false : { opacity: 0, x: 34 }}
-              animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
-              transition={{ duration: 1, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <div className="portrait-stage">
-                <motion.div
-                  className="portrait-spotlight"
-                  animate={reduceMotion ? undefined : { x: [0, 18, -8, 0], y: [0, -10, 8, 0] }}
-                  transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-                />
-                <div className="portrait-halo" />
-                <motion.div
-                  className="portrait-figure"
-                  animate={reduceMotion ? undefined : { y: [0, -8, 0], rotate: [0, 0.4, 0] }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <div className="portrait-shadow" />
-                  <img className="portrait-image" src={grandPortrait} alt="Grandmaster M.S. Adelberto T. Pagsibigan, 33°" />
-                </motion.div>
-                <GrandmasterCard />
-              </div>
-            </motion.div>
           </div>
 
           <FeatureCards />

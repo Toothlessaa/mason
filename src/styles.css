@@ -453,7 +453,7 @@ svg {
 
 .hero-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.22fr) minmax(360px, 1fr);
+  grid-template-columns: 1fr;
   align-items: center;
   gap: clamp(16px, 2vw, 32px);
   min-height: calc(100dvh - 194px);
@@ -1509,9 +1509,13 @@ svg {
   z-index: 5;
   max-width: var(--slide-center-width);
   height: var(--slide-center-height);
-  border-color: rgba(226, 196, 122, 0.88);
+  border: 4px solid rgba(226, 196, 122, 0.96);
   opacity: 1;
-  box-shadow: 0 0 32px rgba(226, 196, 122, 0.36), 0 30px 90px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 0 2px rgba(255, 238, 177, 0.26),
+    0 0 58px rgba(226, 196, 122, 0.62),
+    0 30px 110px rgba(0, 0, 0, 0.58),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
   transform: translate(-50%, -50%) rotate(0deg);
 }
 
@@ -4835,6 +4839,12 @@ a.footer-contact-card:focus-visible {
   }
 
   .leadership-slide-card.is-center {
+    border-width: 3px;
+    box-shadow:
+      0 0 0 1px rgba(255, 238, 177, 0.22),
+      0 0 42px rgba(226, 196, 122, 0.5),
+      0 24px 80px rgba(0, 0, 0, 0.56),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16);
     transform: translate(-50%, -50%) rotate(1deg);
   }
 
