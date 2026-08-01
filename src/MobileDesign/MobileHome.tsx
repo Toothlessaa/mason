@@ -4,7 +4,6 @@ import { GrandmasterMessage } from "../components/GrandmasterMessage";
 import { LeadershipPhotoSlideshow } from "../components/LeadershipPhotoSlideshow";
 import { MediaCenter } from "../components/MediaCenter";
 import { ThreeLights } from "../components/ThreeLights";
-import grandPortrait from "../../grandmaster.png";
 import anthemVideo from "../../movie-anthem.mp4";
 
 const featureCards = [
@@ -24,14 +23,6 @@ export function MobileHome() {
         <div className="md-actions">
           <a href="#about">Discover the Lodge <ArrowRight size={17} /></a>
           <a href="/thank-you" className="md-action-outline">Be a Freemason</a>
-        </div>
-        <div className="md-portrait-card">
-          <img src={grandPortrait} alt="Grandmaster M.S. Adelberto T. Pagsibigan, 33°" />
-          <div>
-            <span>Grandmaster</span>
-            <strong>M.S. Adelberto T. Pagsibigan, 33°</strong>
-            <small>DISTRICT GRAND LODGE OF THE FAR EAST — PHILIPPINE ISLANDS</small>
-          </div>
         </div>
       </section>
 

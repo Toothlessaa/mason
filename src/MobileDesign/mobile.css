@@ -526,6 +526,12 @@
   padding: 14px;
 }
 
+@media (max-width: 768px) {
+  .md-portrait-card {
+    display: none;
+  }
+}
+
 .md-portrait-card img {
   width: 120px;
   height: 150px;
