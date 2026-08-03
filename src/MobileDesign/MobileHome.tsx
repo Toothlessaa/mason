@@ -73,6 +73,7 @@ export function MobileHome() {
       <footer className="md-footer" id="contact">
         <h2>Stay connected with the Lodge.</h2>
         <a href="https://www.facebook.com/profile.php?id=61556922214693" target="_blank" rel="noreferrer">Official Facebook Page</a>
+        <a href="mailto:admin@mcml23.com">Email the Lodge</a>
         <a href="/become-a-member">Become a Member</a>
         <p>@2026 Mt. Capistrano Masonic Lodge No. 23. All Rights Reserved.</p>
         <p>Crafted by Bro. Noel Blanco - I</p>
