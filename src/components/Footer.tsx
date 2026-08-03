@@ -25,7 +25,7 @@ export function Footer() {
               <Share2 size={22} strokeWidth={1.6} />
               <span>Official Facebook Page</span>
             </a>
-            <a className="footer-contact-card" href="mailto:mtcapistrano@example.com">
+            <a className="footer-contact-card" href="mailto:admin@mcml23.com">
               <Mail size={22} strokeWidth={1.6} />
               <span>Email the Lodge</span>
             </a>
