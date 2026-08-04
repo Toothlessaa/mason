@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, ClipboardCheck, Images, LogOut, ShieldCheck, Check, X, RefreshCw, Users } from "lucide-react";
+import { ArrowLeft, ClipboardCheck, Images, LogOut, ShieldCheck, Check, X, RefreshCw, Users, Download } from "lucide-react";
 import districtLogo from "../../logo.jpeg";
 import lodgeLogo from "../../logo1.jpg";
 import { signOut, getAdminSession, getAllMembers, updateMemberStatus, type MemberProfile } from "../data/memberPortal";
+import { supabase } from "../lib/supabase";
 import { MediaAdminPanel } from "./MediaAdminPanel";
 import { LeadershipSlideshowAdminPanel } from "./LeadershipSlideshowAdminPanel";
+
+const apkUrl = supabase.storage.from("media").getPublicUrl("apks/app-release.apk").data.publicUrl;
 
 export function AdminPage() {
   const [authorized, setAuthorized] = useState(false);
@@ -111,6 +114,9 @@ export function AdminPage() {
             </div>
 
             <div className="members-actions">
+              <a href={apkUrl} className="members-action-link" target="_blank" rel="noreferrer">
+                <Download size={17} strokeWidth={1.8} /> Download APK
+              </a>
               <button type="button" className="members-action-link" onClick={loadMembers}>
                 <RefreshCw size={17} strokeWidth={1.8} /> Refresh
               </button>
