@@ -24,17 +24,19 @@ export function HomeScreen() {
       if (memberSession) {
         setAuto("member");
         setChecking(false);
+        navigation.reset({ index: 0, routes: [{ name: "Members" }] });
         return;
       }
       const adminSession = await getAdminSession();
       if (adminSession) {
         setAuto("admin");
         setChecking(false);
+        navigation.reset({ index: 0, routes: [{ name: "Admin" }] });
         return;
       }
       setChecking(false);
     })();
-  }, []);
+  }, [navigation]);
 
   const getStarted = () => {
     if (auto === "member") {

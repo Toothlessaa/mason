@@ -2,6 +2,7 @@ import * as Notifications from "expo-notifications";
 import { KJUR, KEYUTIL } from "jsrsasign";
 import { Platform } from "react-native";
 import serviceAccount from "./firebase-service-account.json";
+import { registerPushToken } from "./memberPortal";
 
 const CHANNEL_ID = "lodge";
 const FCM_SCOPE = "https://www.googleapis.com/auth/firebase.messaging";
@@ -109,6 +110,13 @@ export type PushMessage = {
   title: string;
   body?: string;
 };
+
+export async function registerPushForMember(member: { id: string }) {
+  if (!isPushSupported()) return;
+  const token = await registerForPushNotificationsAsync();
+  if (!token) return;
+  await registerPushToken(member.id, token);
+}
 
 export async function sendPush(token: string, message: PushMessage) {
   try {

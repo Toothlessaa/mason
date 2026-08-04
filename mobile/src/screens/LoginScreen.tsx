@@ -9,6 +9,7 @@ import { Field } from "../components/Field";
 import { GoldButton } from "../components/GoldButton";
 import { Logos } from "../components/Logos";
 import { signIn } from "../lib/memberPortal";
+import { registerPushForMember } from "../lib/push";
 import { colors, fontFamily, fonts, radius, spacing } from "../theme";
 
 export function LoginScreen() {
@@ -38,6 +39,8 @@ export function LoginScreen() {
       setError(signInError?.message ?? "Sign in failed. Please try again.");
       return;
     }
+
+    registerPushForMember(member);
 
     navigation.reset({ index: 0, routes: [{ name: member.is_admin ? "Admin" : "Members" }] });
   };

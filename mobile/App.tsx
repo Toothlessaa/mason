@@ -20,8 +20,8 @@ import { LoginScreen } from "./src/screens/LoginScreen";
 import { MemberDirectoryScreen } from "./src/screens/MemberDirectoryScreen";
 import { ProfileScreen } from "./src/screens/ProfileScreen";
 import type { Section } from "./src/screens/AdminPanelScreen";
-import { getAdminSession, getSession, registerPushToken } from "./src/lib/memberPortal";
-import { registerForPushNotificationsAsync, setupNotifications } from "./src/lib/push";
+import { getAdminSession, getSession } from "./src/lib/memberPortal";
+import { registerPushForMember, setupNotifications } from "./src/lib/push";
 import type { MemberProfile } from "./src/lib/memberPortal";
 
 export type RootStackParamList = {
@@ -58,13 +58,11 @@ export default function App() {
   });
 
   useEffect(() => {
+    setupNotifications();
     (async () => {
       const session = (await getSession()) ?? (await getAdminSession());
       if (!session) return;
-      setupNotifications();
-      const token = await registerForPushNotificationsAsync();
-      if (!token) return;
-      await registerPushToken(session.id, token);
+      await registerPushForMember(session);
     })();
   }, []);
 
