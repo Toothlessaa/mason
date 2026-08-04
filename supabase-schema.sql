@@ -7,6 +7,7 @@
 ALTER TABLE members DROP COLUMN IF EXISTS auth_user_id CASCADE;
 ALTER TABLE members ADD COLUMN IF NOT EXISTS password text;
 ALTER TABLE members ADD COLUMN IF NOT EXISTS is_admin boolean DEFAULT false;
+ALTER TABLE members ADD COLUMN IF NOT EXISTS push_token text;
 ALTER TABLE members ALTER COLUMN is_freemason TYPE text USING is_freemason::text;
 ALTER TABLE members ALTER COLUMN is_freemason SET DEFAULT NULL;
 ALTER TABLE members DISABLE ROW LEVEL SECURITY;
@@ -30,6 +31,7 @@ CREATE TABLE IF NOT EXISTS members (
     CHECK (status IN ('Pending', 'Active', 'Honorary', 'Probationary', 'Rejected')),
   is_freemason text DEFAULT NULL,
   is_admin boolean DEFAULT false,
+  push_token text,
   created_at timestamptz DEFAULT now()
 );
 

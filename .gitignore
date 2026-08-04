@@ -25,3 +25,10 @@ temp/
 *.orig
 *.min.js
 *.map
+
+# Android signing (never commit)
+*.jks
+*.keystore
+keystore.properties
+google-services.json
+android-signing.env

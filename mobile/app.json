@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "Mt. Capistrano Lodge",
+    "slug": "mt-capistrano-lodge",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#020712",
+    "extra": {
+      "eas": {
+        "projectId": "77e55907-3f1a-4c9d-8f2e-b14c6d7a3a5c"
+      }
+    },
+    "ios": {
+      "supportsTablet": true,
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.mcml23.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#020712",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos so admins can upload lodge pictures.",
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#e2c47a",
+          "defaultChannel": "lodge"
+        }
+      ],
+      "expo-font"
+    ]
+  }
+}

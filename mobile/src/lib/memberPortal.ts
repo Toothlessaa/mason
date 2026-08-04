@@ -1,11 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
 import bcrypt from "bcryptjs";
+import { decode } from "base64-arraybuffer";
+import { getItem, setItem, deleteItem } from "./storage";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error("Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY environment variables");
+  throw new Error("Missing EXPO_PUBLIC_SUPABASE_URL or EXPO_PUBLIC_SUPABASE_ANON_KEY environment variables");
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -21,8 +23,14 @@ export type MemberProfile = {
   status: "Pending" | "Active" | "Honorary" | "Probationary" | "Rejected";
   is_freemason: string | null;
   is_admin: boolean;
+  push_token?: string | null;
   created_at: string;
 };
+
+export function resolveDisplayStatus(member: { role?: string | null; status: string }): string {
+  if ((member.role ?? "").trim().toLowerCase() === "pending member") return "Pending";
+  return member.status;
+}
 
 export type MediaPostStatus = "draft" | "published";
 
@@ -87,48 +95,73 @@ export function getMediaPostStoragePaths(post: MediaPost) {
   return storagePaths.length ? storagePaths : [post.storage_path].filter((path): path is string => Boolean(path));
 }
 
-// --- Session management (localStorage) ---
+// --- Auth functions ---
+
+// --- Session management (cross-platform: localStorage on web, SecureStore on native) ---
+// When "remember me" is off, sessions live only in memory and vanish when the app closes.
 
 const SESSION_KEY = "masonic_session";
 const ADMIN_SESSION_KEY = "masonic_admin_session";
 
-function saveSession(member: MemberProfile, isAdmin = false) {
-  const key = isAdmin ? ADMIN_SESSION_KEY : SESSION_KEY;
-  localStorage.setItem(key, JSON.stringify(member));
+type SessionType = "member" | "admin";
+
+const memorySessions: Record<SessionType, MemberProfile | null> = { member: null, admin: null };
+const memoryRemembered: Record<SessionType, boolean> = { member: false, admin: false };
+
+function sessionKey(type: SessionType) {
+  return type === "admin" ? ADMIN_SESSION_KEY : SESSION_KEY;
 }
 
-function clearSession(isAdmin = false) {
-  const key = isAdmin ? ADMIN_SESSION_KEY : SESSION_KEY;
-  localStorage.removeItem(key);
+async function saveSession(member: MemberProfile, type: SessionType, remember: boolean) {
+  memorySessions[type] = member;
+  memoryRemembered[type] = remember;
+  if (remember) {
+    await setItem(sessionKey(type), JSON.stringify(member));
+  } else {
+    await deleteItem(sessionKey(type));
+  }
 }
 
-export function clearAllSessions() {
-  localStorage.removeItem(SESSION_KEY);
-  localStorage.removeItem(ADMIN_SESSION_KEY);
+async function clearSession(type: SessionType) {
+  memorySessions[type] = null;
+  memoryRemembered[type] = false;
+  await deleteItem(sessionKey(type));
 }
 
-export function getSession(): MemberProfile | null {
+export async function clearAllSessions() {
+  memorySessions.member = null;
+  memorySessions.admin = null;
+  memoryRemembered.member = false;
+  memoryRemembered.admin = false;
+  await Promise.all([deleteItem(SESSION_KEY), deleteItem(ADMIN_SESSION_KEY)]);
+}
+
+export async function getSession(): Promise<MemberProfile | null> {
+  if (memorySessions.member) return memorySessions.member;
   try {
-    const raw = localStorage.getItem(SESSION_KEY);
+    const raw = await getItem(SESSION_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as MemberProfile;
+    const member = JSON.parse(raw) as MemberProfile;
+    memorySessions.member = member;
+    memoryRemembered.member = true;
+    return member;
   } catch {
     return null;
   }
 }
 
-export function getAdminSession(): MemberProfile | null {
+export async function getAdminSession(): Promise<MemberProfile | null> {
+  if (memorySessions.admin) return memorySessions.admin;
   try {
-    const raw = localStorage.getItem(ADMIN_SESSION_KEY);
+    const raw = await getItem(ADMIN_SESSION_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as MemberProfile;
+    const member = JSON.parse(raw) as MemberProfile;
+    memorySessions.admin = member;
+    memoryRemembered.admin = true;
+    return member;
   } catch {
     return null;
   }
-}
-
-export function getCurrentMember(): MemberProfile | null {
-  return getSession();
 }
 
 // --- Auth functions ---
@@ -142,7 +175,7 @@ async function queryMemberByEmail(email: string) {
   return data as (MemberProfile & { password?: string }) | null;
 }
 
-export async function signIn(email: string, password: string) {
+export async function signIn(email: string, password: string, remember = true) {
   const data = await queryMemberByEmail(email);
   if (!data || !data.password) {
     return { member: null, error: new Error("Invalid email or password.") };
@@ -153,89 +186,39 @@ export async function signIn(email: string, password: string) {
     return { member: null, error: new Error("Invalid email or password.") };
   }
 
-  const { password: _, ...profile } = data;
-  saveSession(profile);
+  const { password: _password, ...profile } = data;
+  const type: SessionType = data.is_admin ? "admin" : "member";
+  await saveSession(profile, type, remember);
   return { member: profile, error: null };
 }
 
-export async function adminSignIn(email: string, password: string) {
-  const data = await queryMemberByEmail(email);
-  if (!data || !data.password) {
-    return { member: null, error: new Error("Invalid email or password.") };
-  }
-
-  const valid = bcrypt.compareSync(password, data.password);
-  if (!valid) {
-    return { member: null, error: new Error("Invalid email or password.") };
-  }
-
-  if (!data.is_admin) {
-    return { member: null, error: new Error("Access denied. Admin privileges required.") };
-  }
-
-  const { password: _, ...profile } = data;
-  saveSession(profile, true);
-  return { member: profile, error: null };
+export async function signOut() {
+  await clearAllSessions();
+  return { error: null };
 }
 
-export async function signUp(email: string, password: string, name: string, phone?: string, address?: string, freemasonInfo?: string) {
-  const hash = bcrypt.hashSync(password, 10);
+// --- Push notifications ---
 
+export async function registerPushToken(memberId: string, token: string) {
   const { data, error } = await supabase
     .from("members")
-    .insert({
-      name,
-      email,
-      password: hash,
-      phone: phone || null,
-      address: address || null,
-      is_freemason: freemasonInfo || null,
-      status: "Pending",
-    })
+    .update({ push_token: token })
+    .eq("id", memberId)
     .select()
     .single();
 
-  if (error) {
-    return { member: null, error };
-  }
-
-  const { password: _, ...profile } = data as unknown as MemberProfile & { password?: string };
-  notifyAdminsOfApplication(profile.name).catch(() => {});
-  return { member: profile, error: null };
+  return { member: data as MemberProfile | null, error };
 }
 
-async function notifyAdminsOfApplication(name: string) {
-  const { data } = await supabase
+export async function getAdminPushTokens() {
+  const { data, error } = await supabase
     .from("members")
     .select("push_token")
     .eq("is_admin", true)
     .not("push_token", "is", null);
 
-  const tokens = (data ?? [])
-    .map((row) => (row as { push_token: string | null }).push_token)
-    .filter((token): token is string => typeof token === "string");
-
-  if (!tokens.length) return;
-
-  await Promise.all(
-    tokens.map((to) =>
-      fetch("https://exp.host/--/api/v2/push/send", {
-        method: "POST",
-        headers: { Accept: "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to,
-          sound: "default",
-          title: "New Membership Application",
-          body: `${name} applied to join the lodge.`,
-        }),
-      })
-    )
-  );
-}
-
-export async function signOut() {
-  clearAllSessions();
-  return { error: null };
+  const tokens = (data ?? []).flatMap((row) => (typeof row.push_token === "string" ? [row.push_token] : []));
+  return { tokens, error };
 }
 
 // --- Members directory ---
@@ -272,6 +255,31 @@ export async function updateMemberStatus(memberId: string, status: string) {
   return { data: data as MemberProfile | null, error };
 }
 
+export async function updateMemberProfile(
+  memberId: string,
+  fields: { phone?: string | null; address?: string | null }
+) {
+  const updates: Record<string, string | null> = {};
+  if (fields.phone !== undefined) updates.phone = fields.phone?.trim() || null;
+  if (fields.address !== undefined) updates.address = fields.address?.trim() || null;
+
+  const { data, error } = await supabase
+    .from("members")
+    .update(updates)
+    .eq("id", memberId)
+    .select()
+    .single();
+
+  if (error || !data) {
+    return { member: null as MemberProfile | null, error: error || new Error("Unable to update profile.") };
+  }
+
+  const member = data as MemberProfile;
+  const type: SessionType = member.is_admin ? "admin" : "member";
+  await saveSession(member, type, memoryRemembered[type]);
+  return { member, error: null };
+}
+
 // --- Media management ---
 
 const MEDIA_BUCKET = "media";
@@ -280,6 +288,24 @@ const LEADERSHIP_SLIDES_FOLDER = "leadership-slideshow";
 function getSafeFileName(fileName: string) {
   return fileName.toLowerCase().replace(/[^a-z0-9.]+/g, "-").replace(/^-+|-+$/g, "");
 }
+
+async function readImageAsArrayBuffer(image: UploadImage) {
+  const FileSystem = await import("expo-file-system/legacy");
+  const base64 = await FileSystem.readAsStringAsync(image.uri, { encoding: FileSystem.EncodingType.Base64 });
+  return decode(base64);
+}
+
+async function uploadFileBody(image: UploadImage) {
+  if (image.file) return image.file;
+  return readImageAsArrayBuffer(image);
+}
+
+export type UploadImage = {
+  uri: string;
+  name: string;
+  type: string;
+  file?: File;
+};
 
 export async function getPublishedMediaPosts() {
   const { data, error } = await supabase
@@ -300,10 +326,13 @@ export async function getAllMediaPosts() {
   return { data: data as MediaPost[] | null, error };
 }
 
-export async function uploadMediaImage(file: File) {
-  const storagePath = `${Date.now()}-${getSafeFileName(file.name)}`;
-  const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(storagePath, file, {
+export async function uploadMediaImage(image: UploadImage) {
+  const storagePath = `${Date.now()}-${getSafeFileName(image.name)}`;
+  const body = await uploadFileBody(image);
+
+  const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(storagePath, body, {
     cacheControl: "3600",
+    contentType: image.type || "image/jpeg",
     upsert: false,
   });
 
@@ -313,10 +342,13 @@ export async function uploadMediaImage(file: File) {
   return { imageUrl: data.publicUrl, storagePath, error: null };
 }
 
-async function uploadLeadershipSlideImage(file: File) {
-  const storagePath = `${LEADERSHIP_SLIDES_FOLDER}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${getSafeFileName(file.name)}`;
-  const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(storagePath, file, {
+async function uploadLeadershipSlideImage(image: UploadImage) {
+  const storagePath = `${LEADERSHIP_SLIDES_FOLDER}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${getSafeFileName(image.name)}`;
+  const body = await uploadFileBody(image);
+
+  const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(storagePath, body, {
     cacheControl: "3600",
+    contentType: image.type || "image/jpeg",
     upsert: false,
   });
 
@@ -326,12 +358,12 @@ async function uploadLeadershipSlideImage(file: File) {
   return { imageUrl: data.publicUrl, storagePath, error: null };
 }
 
-async function uploadMediaImages(files: File[]) {
+async function uploadMediaImages(images: UploadImage[]) {
   const imageUrls: string[] = [];
   const storagePaths: string[] = [];
 
-  for (const file of files) {
-    const upload = await uploadMediaImage(file);
+  for (const image of images) {
+    const upload = await uploadMediaImage(image);
     if (upload.error || !upload.imageUrl) {
       if (storagePaths.length) await supabase.storage.from(MEDIA_BUCKET).remove(storagePaths);
       return { imageUrls: null, storagePaths: null, error: upload.error || new Error("Unable to upload image.") };
@@ -344,8 +376,8 @@ async function uploadMediaImages(files: File[]) {
   return { imageUrls, storagePaths, error: null };
 }
 
-export async function createMediaPost(input: MediaPostInput, imageFiles: File[]) {
-  const upload = await uploadMediaImages(imageFiles);
+export async function createMediaPost(input: MediaPostInput, images: UploadImage[]) {
+  const upload = await uploadMediaImages(images);
   if (upload.error || !upload.imageUrls?.length) {
     return { data: null, error: upload.error || new Error("Unable to upload images.") };
   }
@@ -370,8 +402,8 @@ export async function createMediaPost(input: MediaPostInput, imageFiles: File[])
   return { data: data as MediaPost | null, error };
 }
 
-export async function updateMediaPost(post: MediaPost, input: MediaPostInput, imageFiles: File[] = []) {
-  const upload = imageFiles.length ? await uploadMediaImages(imageFiles) : { imageUrls: [] as string[], storagePaths: [] as string[], error: null };
+export async function updateMediaPost(post: MediaPost, input: MediaPostInput, images: UploadImage[] = []) {
+  const upload = images.length ? await uploadMediaImages(images) : { imageUrls: [] as string[], storagePaths: [] as string[], error: null };
   if (upload.error) {
     return { data: null, error: upload.error };
   }
@@ -487,11 +519,11 @@ export async function getAllLeadershipSlides() {
 }
 
 export async function createLeadershipSlides({
-  imageFiles,
+  images,
   status,
   createdBy,
 }: {
-  imageFiles: File[];
+  images: UploadImage[];
   status: LeadershipSlideStatus;
   createdBy?: string;
 }) {
@@ -499,8 +531,8 @@ export async function createLeadershipSlides({
   const uploadedStoragePaths: string[] = [];
   const sortStart = Date.now();
 
-  for (const [index, file] of imageFiles.entries()) {
-    const upload = await uploadLeadershipSlideImage(file);
+  for (const [index, image] of images.entries()) {
+    const upload = await uploadLeadershipSlideImage(image);
     if (upload.error || !upload.imageUrl) {
       if (uploadedStoragePaths.length) await supabase.storage.from(MEDIA_BUCKET).remove(uploadedStoragePaths);
       return { data: null, error: upload.error || new Error("Unable to upload slideshow image.") };
