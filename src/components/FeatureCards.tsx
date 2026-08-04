@@ -1,8 +1,8 @@
-import type { LucideIcon } from "lucide-react";
+import type { ElementType } from "react";
 import { BookOpenText, Columns3, Compass, HeartHandshake } from "lucide-react";
 import { motion } from "framer-motion";
 
-const features: Array<{ title: string; description: string; Icon: LucideIcon }> = [
+const features: Array<{ title: string; description: string; Icon: ElementType }> = [
   {
     title: "Brotherhood",
     description: "United through timeless principles and mutual respect.",

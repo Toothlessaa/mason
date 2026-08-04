@@ -1,9 +1,64 @@
-import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
+import { KJUR, KEYUTIL } from "jsrsasign";
 import { Platform } from "react-native";
+import serviceAccount from "./firebase-service-account.json";
 
 const CHANNEL_ID = "lodge";
-const EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
+const FCM_SCOPE = "https://www.googleapis.com/auth/firebase.messaging";
+
+const service = serviceAccount as {
+  project_id: string;
+  client_email: string;
+  private_key: string;
+  token_uri: string;
+};
+
+const FCM_URL = `https://fcm.googleapis.com/v1/projects/${service.project_id}/messages:send`;
+
+let cachedAccessToken: string | null = null;
+let cachedTokenExpiry = 0;
+
+async function getFcmAccessToken() {
+  const now = Math.floor(Date.now() / 1000);
+  if (cachedAccessToken && now < cachedTokenExpiry) return cachedAccessToken;
+
+  try {
+    const header = { alg: "RS256", typ: "JWT" };
+    const claims = {
+      iss: service.client_email,
+      scope: FCM_SCOPE,
+      aud: service.token_uri,
+      iat: now,
+      exp: now + 3600,
+    };
+    const jwt = KJUR.jws.JWS.sign(
+      "RS256",
+      header,
+      JSON.stringify(claims),
+      KEYUTIL.getKey(service.private_key) as Parameters<typeof KJUR.jws.JWS.sign>[3]
+    );
+
+    const body = new URLSearchParams();
+    body.append("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer");
+    body.append("assertion", jwt);
+
+    const response = await fetch(service.token_uri, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString(),
+    });
+    if (!response.ok) return null;
+
+    const tokenResponse = (await response.json()) as { access_token?: string; expires_in?: number };
+    if (!tokenResponse.access_token) return null;
+
+    cachedAccessToken = tokenResponse.access_token;
+    cachedTokenExpiry = now + (tokenResponse.expires_in ?? 3600) - 60;
+    return cachedAccessToken;
+  } catch {
+    return null;
+  }
+}
 
 export function isPushSupported() {
   return Platform.OS !== "web";
@@ -42,11 +97,9 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
     }
     if (finalStatus !== "granted") return null;
 
-    const projectId =
-      Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
-    if (!projectId) return null;
-
-    return (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+    const deviceToken = await Notifications.getDevicePushTokenAsync();
+    if (deviceToken.type !== "fcm" || typeof deviceToken.data !== "string") return null;
+    return deviceToken.data;
   } catch {
     return null;
   }
@@ -55,23 +108,34 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
 export type PushMessage = {
   title: string;
   body?: string;
-  data?: Record<string, string>;
 };
 
 export async function sendPush(token: string, message: PushMessage) {
   try {
-    const response = await fetch(EXPO_PUSH_URL, {
+    const accessToken = await getFcmAccessToken();
+    if (!accessToken) return false;
+
+    const notification: Record<string, string> = { title: message.title };
+    if (message.body) notification.body = message.body;
+
+    const response = await fetch(FCM_URL, {
       method: "POST",
       headers: {
-        Accept: "application/json",
-        "Accept-encoding": "gzip, deflate",
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        to: token,
-        sound: "default",
-        channelId: Platform.OS === "android" ? CHANNEL_ID : undefined,
-        ...message,
+        message: {
+          token,
+          notification,
+          android: {
+            notification: {
+              channel_id: CHANNEL_ID,
+              sound: "default",
+              color: "#e2c47a",
+            },
+          },
+        },
       }),
     });
     return response.ok;

@@ -32,6 +32,7 @@ jobs:
           if [ -z "$KEY_ALIAS" ]; then echo "::error::Secret ANDROID_KEY_ALIAS is missing or empty."; exit 1; fi
           if [ -z "$SUPABASE_URL" ]; then echo "::error::Secret EXPO_PUBLIC_SUPABASE_URL is missing or empty."; exit 1; fi
           if [ -z "$SUPABASE_KEY" ]; then echo "::error::Secret EXPO_PUBLIC_SUPABASE_ANON_KEY is missing or empty."; exit 1; fi
+          if [ -z "$GOOGLE_SERVICES" ]; then echo "::error::Secret GOOGLE_SERVICES_JSON_B64 is missing or empty."; exit 1; fi
         env:
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
           STORE_PASS: ${{ secrets.ANDROID_STORE_PASSWORD }}
@@ -39,10 +40,19 @@ jobs:
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+          GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES_JSON_B64 }}
 
       - name: Install dependencies
         working-directory: mobile
         run: npm ci
+
+      - name: Install Firebase config
+        working-directory: mobile
+        run: |
+          echo "$GOOGLE_SERVICES" | base64 -d > google-services.json
+          test -s google-services.json
+        env:
+          GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES_JSON_B64 }}
 
       - name: Generate Expo project
         working-directory: mobile

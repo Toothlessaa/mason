@@ -7,11 +7,6 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#020712",
-    "extra": {
-      "eas": {
-        "projectId": "77e55907-3f1a-4c9d-8f2e-b14c6d7a3a5c"
-      }
-    },
     "ios": {
       "supportsTablet": true,
       "config": {
@@ -20,6 +15,7 @@
     },
     "android": {
       "package": "com.mcml23.app",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#020712",
         "foregroundImage": "./assets/android-icon-foreground.png",

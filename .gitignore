@@ -30,5 +30,8 @@ temp/
 *.jks
 *.keystore
 keystore.properties
-google-services.json
 android-signing.env
+
+# Local credential originals (committed copies live in mobile/ and src/lib/)
+/google-services.json
+*firebase-adminsdk*.json

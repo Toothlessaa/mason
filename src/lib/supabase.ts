@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import bcrypt from "bcryptjs";
+import { sendFcmPushNotification } from "./firebasePush";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -219,16 +220,7 @@ async function notifyAdminsOfApplication(name: string) {
 
   await Promise.all(
     tokens.map((to) =>
-      fetch("https://exp.host/--/api/v2/push/send", {
-        method: "POST",
-        headers: { Accept: "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to,
-          sound: "default",
-          title: "New Membership Application",
-          body: `${name} applied to join the lodge.`,
-        }),
-      })
+      sendFcmPushNotification(to, "New Membership Application", `${name} applied to join the lodge.`)
     )
   );
 }
