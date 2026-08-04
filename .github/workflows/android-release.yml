@@ -84,22 +84,14 @@ jobs:
           ORG_GRADLE_PROJECT_MYAPP_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ORG_GRADLE_PROJECT_MYAPP_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
-      - name: Upload APK to Supabase Storage
-        working-directory: mobile/android
-        run: |
-          response=$(curl -sS -w "\n%{http_code}" -X POST \
-            -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
-            -H "Content-Type: application/vnd.android.package-archive" \
-            -H "x-upsert: true" \
-            --data-binary @app/build/outputs/apk/release/app-release.apk \
-            "${SUPABASE_URL}/storage/v1/object/media/apks/app-release.apk")
-          code="${response##*$'\n'}"
-          body="${response%$'\n'*}"
-          echo "HTTP $code: $body"
-          test "$code" = "200" || { echo "::error::APK upload to Supabase Storage failed (HTTP $code)"; exit 1; }
-        env:
-          SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
-          SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      - name: Publish APK to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Android Build #${{ github.run_number }}
+          files: mobile/android/app/build/outputs/apk/release/app-release.apk
+          make_latest: true
+          fail_on_unmatched_files: true
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

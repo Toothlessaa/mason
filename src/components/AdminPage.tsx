@@ -3,11 +3,10 @@ import { ArrowLeft, ClipboardCheck, Images, LogOut, ShieldCheck, Check, X, Refre
 import districtLogo from "../../logo.jpeg";
 import lodgeLogo from "../../logo1.jpg";
 import { signOut, getAdminSession, getAllMembers, updateMemberStatus, type MemberProfile } from "../data/memberPortal";
-import { supabase } from "../lib/supabase";
 import { MediaAdminPanel } from "./MediaAdminPanel";
 import { LeadershipSlideshowAdminPanel } from "./LeadershipSlideshowAdminPanel";
 
-const apkUrl = supabase.storage.from("media").getPublicUrl("apks/app-release.apk").data.publicUrl;
+const apkUrl = "https://github.com/Toothlessaa/mason/releases/latest/download/app-release.apk";
 
 export function AdminPage() {
   const [authorized, setAuthorized] = useState(false);
