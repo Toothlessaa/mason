@@ -70,6 +70,18 @@
   background: rgba(226, 196, 122, 0.06);
 }
 
+.md-members-actions .md-apk-button {
+  background: #e2c47a;
+  border-color: #e2c47a;
+  color: #0a1420;
+}
+
+.md-members-actions .md-apk-button:hover {
+  background: #f3dfb2;
+  border-color: #f3dfb2;
+  color: #0a1420;
+}
+
 .md-admin-tabs {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, ClipboardCheck, Images, LogOut, ShieldCheck, Check, X, RefreshCw, Users } from "lucide-react";
+import { ArrowLeft, ClipboardCheck, Download, Images, LogOut, ShieldCheck, Check, X, RefreshCw, Users } from "lucide-react";
 import districtLogo from "../../logo.jpeg";
 import lodgeLogo from "../../logo1.jpg";
 import { signOut, getAdminSession, getAllMembers, updateMemberStatus, type MemberProfile } from "../data/memberPortal";
@@ -74,6 +74,9 @@ export function MobileAdminPage() {
         <p>Welcome, {sessionName}. {pageIntro}</p>
         <div className="md-members-actions">
           <a href="/"><ArrowLeft size={16} /> Home</a>
+          <a className="md-apk-button" href="https://github.com/Toothlessaa/mason/releases/latest/download/app-release.apk" download>
+            <Download size={16} /> Download APK
+          </a>
           <button type="button" onClick={loadMembers} style={{ background: "none", border: "none", cursor: "pointer", color: "inherit", display: "flex", alignItems: "center", gap: "6px" }}>
             <RefreshCw size={16} /> Refresh
           </button>
