@@ -101,7 +101,11 @@ export async function registerForPushNotificationsAsync(): Promise<{ token: stri
     }
 
     const deviceToken = await Notifications.getDevicePushTokenAsync();
-    if (deviceToken.type !== "fcm") {
+    if (Platform.OS === "android") {
+      if (deviceToken.type !== "android" && deviceToken.type !== "fcm") {
+        return { token: null, error: `Unexpected device token type: ${String(deviceToken.type)}` };
+      }
+    } else if (deviceToken.type !== "ios") {
       return { token: null, error: `Unexpected device token type: ${String(deviceToken.type)}` };
     }
     if (typeof deviceToken.data !== "string") {
