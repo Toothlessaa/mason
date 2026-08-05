@@ -32,25 +32,28 @@ export function MobileNavbar() {
             <span className="md-brand-number">No. 23</span>
           </span>
         </a>
-        <a href="/member-login" className="md-access-link">
-          <LockKeyhole size={14} strokeWidth={1.8} />
-          Member Access
-        </a>
         <button className="md-menu-button" type="button" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen((value) => !value)}>
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
       {open ? (
-        <nav className="md-menu" aria-label="Mobile navigation">
-          {scrollLinks.map((link) => (
-            link.disabled ? (
-              <span className="md-menu-disabled" key={link.label} aria-disabled="true">{link.label}</span>
-            ) : (
-              <a key={link.href} href={link.href} onClick={() => setOpen(false)}>{link.label}</a>
-            )
-          ))}
-        </nav>
+        <>
+          <button className="md-menu-backdrop" type="button" aria-label="Close menu" onClick={() => setOpen(false)} />
+          <nav className="md-menu" aria-label="Mobile navigation">
+            <a className="md-menu-access" href="/member-login" onClick={() => setOpen(false)}>
+              <LockKeyhole size={15} strokeWidth={1.8} />
+              Member Access
+            </a>
+            {scrollLinks.map((link) => (
+              link.disabled ? (
+                <span className="md-menu-disabled" key={link.label} aria-disabled="true">{link.label}</span>
+              ) : (
+                <a key={link.href} href={link.href} onClick={() => setOpen(false)}>{link.label}</a>
+              )
+            ))}
+          </nav>
+        </>
       ) : null}
     </header>
   );
