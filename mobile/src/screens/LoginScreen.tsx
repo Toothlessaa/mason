@@ -21,6 +21,7 @@ export function LoginScreen() {
   const [remember, setRemember] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
 
   const submit = async () => {
     if (busy) return;
@@ -40,7 +41,11 @@ export function LoginScreen() {
       return;
     }
 
-    registerPushForMember(member);
+    registerPushForMember(member).then((result) => {
+      if (!result.saved) {
+        setNotice("Notifications are off — enable them in phone Settings to receive lodge pushes.");
+      }
+    });
 
     navigation.reset({ index: 0, routes: [{ name: member.is_admin ? "Admin" : "Members" }] });
   };
@@ -97,6 +102,8 @@ export function LoginScreen() {
           </Pressable>
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
+
+          {notice ? <Text style={styles.notice}>{notice}</Text> : null}
 
           <GoldButton
             title="Sign In"
@@ -159,6 +166,11 @@ const styles = StyleSheet.create({
   },
   error: {
     color: colors.redSoft,
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  notice: {
+    color: colors.gold,
     fontSize: 13,
     fontWeight: "600",
   },

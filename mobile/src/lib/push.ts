@@ -111,11 +111,39 @@ export type PushMessage = {
   body?: string;
 };
 
-export async function registerPushForMember(member: { id: string }) {
-  if (!isPushSupported()) return;
+export async function getPushPermissionStatus(): Promise<string> {
+  if (!isPushSupported()) return "unsupported";
+  try {
+    const { status } = await Notifications.getPermissionsAsync();
+    return status;
+  } catch {
+    return "undetermined";
+  }
+}
+
+export type PushRegistrationResult = {
+  permission: string;
+  token: string | null;
+  saved: boolean;
+  error: string | null;
+};
+
+export async function registerPushForMember(member: { id: string }): Promise<PushRegistrationResult> {
+  if (!isPushSupported()) {
+    return { permission: "unsupported", token: null, saved: false, error: null };
+  }
   const token = await registerForPushNotificationsAsync();
-  if (!token) return;
-  await registerPushToken(member.id, token);
+  if (!token) {
+    const permission = await getPushPermissionStatus();
+    return {
+      permission,
+      token: null,
+      saved: false,
+      error: permission === "granted" ? "Could not obtain a device token." : "Notification permission was not granted.",
+    };
+  }
+  const { error } = await registerPushToken(member.id, token);
+  return { permission: "granted", token, saved: !error, error: error ? error.message : null };
 }
 
 export async function sendPush(token: string, message: PushMessage) {

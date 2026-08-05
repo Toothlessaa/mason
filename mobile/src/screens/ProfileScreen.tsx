@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { LinearGradient } from "expo-linear-gradient";
-import { ArrowLeft, Calendar, ClipboardCheck, Clock, FileText, Images, Info, LayoutGrid, LogOut, Mail, MapPin, Megaphone, Phone, Presentation, Save, ShieldCheck, UserRound, Users, UserX, type LucideIcon } from "lucide-react-native";
+import { ArrowLeft, BellRing, Calendar, ClipboardCheck, Clock, FileText, Images, Info, LayoutGrid, LogOut, Mail, MapPin, Megaphone, Phone, Presentation, Save, ShieldCheck, UserRound, Users, UserX, type LucideIcon } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -9,6 +9,7 @@ import { RootStackParamList } from "../../App";
 import { BottomNav, type BottomNavItem } from "../components/BottomNav";
 import { StatusBadge } from "../components/StatusBadge";
 import { getAdminSession, getSession, resolveDisplayStatus, signOut, updateMemberProfile, type MemberProfile } from "../lib/memberPortal";
+import { getPushPermissionStatus, registerPushForMember, sendPush } from "../lib/push";
 import { colors, fontFamily, radius, shadows, sizes, spacing } from "../theme";
 
 const STATUS_ICONS: Record<string, LucideIcon> = {
@@ -34,6 +35,14 @@ export function ProfileScreen() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [saving, setSaving] = useState(false);
+  const [pushPermission, setPushPermission] = useState("");
+  const [pushTesting, setPushTesting] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setPushPermission(await getPushPermissionStatus());
+    })();
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -66,6 +75,38 @@ export function ProfileScreen() {
   const logout = async () => {
     await signOut();
     navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+  };
+
+  const enablePush = async () => {
+    if (!member) return;
+    const result = await registerPushForMember(member);
+    setPushPermission(result.permission);
+    if (result.saved && result.token) {
+      Alert.alert("Notifications enabled", "This device is registered to receive lodge pushes.");
+    } else {
+      Alert.alert("Notifications not enabled", result.error || "Permission was not granted.");
+    }
+  };
+
+  const testPush = async () => {
+    if (!member || pushTesting) return;
+    setPushTesting(true);
+    const result = await registerPushForMember(member);
+    setPushPermission(result.permission);
+    if (!result.token || !result.saved) {
+      setPushTesting(false);
+      Alert.alert("Not registered", result.error || "Allow notifications first.");
+      return;
+    }
+    const ok = await sendPush(result.token, {
+      title: "Test Push",
+      body: "Mt. Capistrano Masonic Lodge No. 23 — push is working!",
+    });
+    setPushTesting(false);
+    Alert.alert(
+      ok ? "Test push sent" : "Test push failed",
+      ok ? "Check your notification shade." : "FCM rejected the message. Report this to support."
+    );
   };
 
   const comingSoon = (feature: string) => {
@@ -189,6 +230,34 @@ export function ProfileScreen() {
                 <>
                   <Save size={17} color="#0a1420" />
                   <Text style={styles.saveButtonText}>Save Changes</Text>
+                </>
+              )}
+            </Pressable>
+          </LinearGradient>
+
+          <LinearGradient colors={[colors.gradCardStart, colors.gradCardEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.card}>
+            <Text style={styles.sectionLabel}>Notifications</Text>
+            <View style={styles.readOnlyRow}>
+              <BellRing size={15} color={colors.gold} />
+              <Text style={styles.readOnlyText}>
+                Permission: {pushPermission === "granted" ? "Allowed" : pushPermission === "denied" ? "Denied — allow in phone Settings" : "Not asked yet"}
+              </Text>
+            </View>
+            <View style={styles.readOnlyRow}>
+              <ShieldCheck size={15} color={colors.gold} />
+              <Text style={styles.readOnlyText}>{member.push_token ? "This device is registered" : "No device token saved for this account"}</Text>
+            </View>
+            <Pressable style={({ pressed }) => [styles.saveButton, pressed && styles.pressed]} onPress={enablePush}>
+              <BellRing size={17} color="#0a1420" />
+              <Text style={styles.saveButtonText}>Enable Notifications</Text>
+            </Pressable>
+            <Pressable style={({ pressed }) => [styles.outlineButton, pressed && styles.pressed, pushTesting && styles.saveButtonDisabled]} onPress={testPush} disabled={pushTesting}>
+              {pushTesting ? (
+                <ActivityIndicator color={colors.gold} />
+              ) : (
+                <>
+                  <BellRing size={17} color={colors.gold} />
+                  <Text style={styles.outlineButtonText}>Send Test Push to This Device</Text>
                 </>
               )}
             </Pressable>
@@ -403,6 +472,21 @@ const styles = StyleSheet.create({
     color: "#0a1420",
     fontSize: 15,
     fontFamily: fontFamily.bold,
+  },
+  outlineButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.goldBorder,
+    borderRadius: radius.lg,
+    minHeight: 50,
+  },
+  outlineButtonText: {
+    color: colors.gold,
+    fontSize: 14,
+    fontFamily: fontFamily.semibold,
   },
   logoutButton: {
     flexDirection: "row",
