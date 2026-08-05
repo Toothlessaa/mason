@@ -225,6 +225,23 @@ async function notifyAdminsOfApplication(name: string) {
   );
 }
 
+export async function notifyMemberApproved(memberId: string) {
+  const { data } = await supabase
+    .from("members")
+    .select("push_token, name")
+    .eq("id", memberId)
+    .maybeSingle();
+
+  const row = data as { push_token: string | null; name: string } | null;
+  if (!row?.push_token) return;
+
+  await sendFcmPushNotification(
+    row.push_token,
+    "Membership Approved",
+    `Welcome to Mt. Capistrano Masonic Lodge No. 23, ${(row.name ?? "").split(" ")[0]}. Your application has been approved.`
+  );
+}
+
 export async function signOut() {
   clearAllSessions();
   return { error: null };

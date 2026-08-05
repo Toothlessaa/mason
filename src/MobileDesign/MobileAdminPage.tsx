@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ClipboardCheck, Download, Images, LogOut, ShieldCheck, Check, X, RefreshCw, Users } from "lucide-react";
 import districtLogo from "../../logo.jpeg";
 import lodgeLogo from "../../logo1.jpg";
-import { signOut, getAdminSession, getAllMembers, updateMemberStatus, type MemberProfile } from "../data/memberPortal";
+import { signOut, getAdminSession, getAllMembers, notifyMemberApproved, updateMemberStatus, type MemberProfile } from "../data/memberPortal";
 import { MediaAdminPanel } from "../components/MediaAdminPanel";
 import { LeadershipSlideshowAdminPanel } from "../components/LeadershipSlideshowAdminPanel";
 
@@ -39,6 +39,7 @@ export function MobileAdminPage() {
 
   const handleApprove = async (memberId: string) => {
     await updateMemberStatus(memberId, "Active");
+    notifyMemberApproved(memberId).catch(() => {});
     await loadMembers();
   };
 

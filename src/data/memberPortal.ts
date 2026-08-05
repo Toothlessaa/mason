@@ -13,6 +13,7 @@ export {
   getMembers,
   getAllMembers,
   updateMemberStatus,
+  notifyMemberApproved,
   getPublishedMediaPosts,
   getAllMediaPosts,
   getMediaPostImageUrls,
