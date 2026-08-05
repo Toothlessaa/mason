@@ -36,6 +36,7 @@ export function ProfileScreen() {
   const [address, setAddress] = useState("");
   const [saving, setSaving] = useState(false);
   const [pushPermission, setPushPermission] = useState("");
+  const [pushDetail, setPushDetail] = useState("");
   const [pushTesting, setPushTesting] = useState(false);
 
   useEffect(() => {
@@ -79,8 +80,12 @@ export function ProfileScreen() {
 
   const enablePush = async () => {
     if (!member) return;
+    setPushDetail("Requesting permission...");
     const result = await registerPushForMember(member);
     setPushPermission(result.permission);
+    setPushDetail(
+      `permission=${result.permission} saved=${result.saved} token=${result.token ? result.token.slice(0, 12) + "..." : "none"} error=${result.error ?? "none"}`
+    );
     if (result.saved && result.token) {
       Alert.alert("Notifications enabled", "This device is registered to receive lodge pushes.");
     } else {
@@ -91,18 +96,24 @@ export function ProfileScreen() {
   const testPush = async () => {
     if (!member || pushTesting) return;
     setPushTesting(true);
+    setPushDetail("Registering device...");
     const result = await registerPushForMember(member);
     setPushPermission(result.permission);
+    setPushDetail(
+      `permission=${result.permission} saved=${result.saved} token=${result.token ? result.token.slice(0, 12) + "..." : "none"} error=${result.error ?? "none"}`
+    );
     if (!result.token || !result.saved) {
       setPushTesting(false);
       Alert.alert("Not registered", result.error || "Allow notifications first.");
       return;
     }
+    setPushDetail("Sending test push via FCM...");
     const ok = await sendPush(result.token, {
       title: "Test Push",
       body: "Mt. Capistrano Masonic Lodge No. 23 — push is working!",
     });
     setPushTesting(false);
+    setPushDetail(ok ? "FCM accepted the message." : "FCM rejected the message.");
     Alert.alert(
       ok ? "Test push sent" : "Test push failed",
       ok ? "Check your notification shade." : "FCM rejected the message. Report this to support."
@@ -261,6 +272,7 @@ export function ProfileScreen() {
                 </>
               )}
             </Pressable>
+            {pushDetail ? <Text style={styles.pushDetail}>{pushDetail}</Text> : null}
           </LinearGradient>
 
           <Pressable style={({ pressed }) => [styles.logoutButton, pressed && styles.pressed]} onPress={logout}>
@@ -487,6 +499,12 @@ const styles = StyleSheet.create({
     color: colors.gold,
     fontSize: 14,
     fontFamily: fontFamily.semibold,
+  },
+  pushDetail: {
+    color: colors.textDim,
+    fontSize: 11,
+    fontFamily: fontFamily.medium,
+    lineHeight: 16,
   },
   logoutButton: {
     flexDirection: "row",
