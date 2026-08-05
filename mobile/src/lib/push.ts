@@ -77,8 +77,8 @@ export function setupNotifications() {
   });
 }
 
-export async function registerForPushNotificationsAsync(): Promise<string | null> {
-  if (!isPushSupported()) return null;
+export async function registerForPushNotificationsAsync(): Promise<{ token: string | null; error: string | null }> {
+  if (!isPushSupported()) return { token: null, error: null };
 
   try {
     if (Platform.OS === "android") {
@@ -96,13 +96,20 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
-    if (finalStatus !== "granted") return null;
+    if (finalStatus !== "granted") {
+      return { token: null, error: `Permission not granted (${finalStatus})` };
+    }
 
     const deviceToken = await Notifications.getDevicePushTokenAsync();
-    if (deviceToken.type !== "fcm" || typeof deviceToken.data !== "string") return null;
-    return deviceToken.data;
-  } catch {
-    return null;
+    if (deviceToken.type !== "fcm") {
+      return { token: null, error: `Unexpected device token type: ${String(deviceToken.type)}` };
+    }
+    if (typeof deviceToken.data !== "string") {
+      return { token: null, error: `Unexpected device token data: ${JSON.stringify(deviceToken.data)}` };
+    }
+    return { token: deviceToken.data, error: null };
+  } catch (e) {
+    return { token: null, error: e instanceof Error ? e.message : String(e) };
   }
 }
 
@@ -132,18 +139,18 @@ export async function registerPushForMember(member: { id: string }): Promise<Pus
   if (!isPushSupported()) {
     return { permission: "unsupported", token: null, saved: false, error: null };
   }
-  const token = await registerForPushNotificationsAsync();
-  if (!token) {
+  const result = await registerForPushNotificationsAsync();
+  if (!result.token) {
     const permission = await getPushPermissionStatus();
     return {
       permission,
       token: null,
       saved: false,
-      error: permission === "granted" ? "Could not obtain a device token." : "Notification permission was not granted.",
+      error: result.error || "No device token obtained.",
     };
   }
-  const { error } = await registerPushToken(member.id, token);
-  return { permission: "granted", token, saved: !error, error: error ? error.message : null };
+  const { error } = await registerPushToken(member.id, result.token);
+  return { permission: "granted", token: result.token, saved: !error, error: error ? error.message : null };
 }
 
 export async function sendPush(token: string, message: PushMessage) {
