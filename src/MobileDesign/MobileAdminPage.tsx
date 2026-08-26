@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, ClipboardCheck, Download, Images, LogOut, ShieldCheck, Check, X, RefreshCw, Users } from "lucide-react";
+import { ArrowLeft, ClipboardCheck, Crown, Download, Images, LogOut, ShieldCheck, Check, X, RefreshCw, Users } from "lucide-react";
 import districtLogo from "../../logo.jpeg";
 import lodgeLogo from "../../logo1.jpg";
 import { signOut, getAdminSession, getAllMembers, notifyMemberApproved, updateMemberStatus, type MemberProfile } from "../data/memberPortal";
 import { MediaAdminPanel } from "../components/MediaAdminPanel";
 import { LeadershipSlideshowAdminPanel } from "../components/LeadershipSlideshowAdminPanel";
+import { PastMastersAdminPanel } from "../components/PastMastersAdminPanel";
 
 export function MobileAdminPage() {
   const [authorized, setAuthorized] = useState(false);
   const [members, setMembers] = useState<MemberProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [sessionName, setSessionName] = useState("");
-  const [activeSection, setActiveSection] = useState<"approvals" | "members" | "slideshow" | "media">("approvals");
+  const [activeSection, setActiveSection] = useState<"approvals" | "members" | "slideshow" | "media" | "pastmasters">("approvals");
 
   const loadMembers = async () => {
     setLoading(true);
@@ -54,14 +55,16 @@ export function MobileAdminPage() {
   const activeCount = members.filter((m) => m.status === "Active").length;
   const visibleMembers = activeSection === "approvals" ? members.filter((member) => member.status === "Pending") : members;
   const isMemberSection = activeSection === "approvals" || activeSection === "members";
-  const pageTitle = activeSection === "approvals" ? "Approvals" : activeSection === "members" ? "Members" : activeSection === "slideshow" ? "Slideshow" : "Media";
+  const pageTitle = activeSection === "approvals" ? "Approvals" : activeSection === "members" ? "Members" : activeSection === "slideshow" ? "Slideshow" : activeSection === "pastmasters" ? "Past Masters" : "Media";
   const pageIntro = activeSection === "approvals"
     ? "Review pending applications before they enter the member database."
     : activeSection === "members"
       ? "View all member records from the database."
       : activeSection === "slideshow"
         ? "Upload moving pictures shown between The Three Lights and Media."
-        : "Upload and publish media for the public website.";
+        : activeSection === "pastmasters"
+          ? "Manage the list of Past Masters displayed on the public website."
+          : "Upload and publish media for the public website.";
 
   return (
     <section className="md-members-page">
@@ -98,6 +101,9 @@ export function MobileAdminPage() {
           </button>
           <button type="button" className={activeSection === "slideshow" ? "is-active" : undefined} onClick={() => setActiveSection("slideshow")}>
             <Images size={16} /> Slides
+          </button>
+          <button type="button" className={activeSection === "pastmasters" ? "is-active" : undefined} onClick={() => setActiveSection("pastmasters")}>
+            <Crown size={16} /> Past Masters
           </button>
         </div>
       </div>
@@ -148,6 +154,10 @@ export function MobileAdminPage() {
       ) : activeSection === "slideshow" ? (
         <div className="md-admin-media-wrap">
           <LeadershipSlideshowAdminPanel adminName={sessionName} />
+        </div>
+      ) : activeSection === "pastmasters" ? (
+        <div className="md-admin-media-wrap">
+          <PastMastersAdminPanel adminName={sessionName} />
         </div>
       ) : (
         <div className="md-admin-media-wrap">

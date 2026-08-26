@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { LockKeyhole, Menu, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, LockKeyhole, Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GoldButton } from "./GoldButton";
 import districtLogo from "../../logo.jpeg";
@@ -9,10 +9,27 @@ type ScrollNavItem =
   | { label: string; id: string; disabled?: never }
   | { label: string; disabled: true; id?: never };
 
-const scrollNavItems: ScrollNavItem[] = [
+type DropdownNavItem = {
+  label: string;
+  children: { label: string; href: string; isAnchor?: boolean }[];
+};
+
+type NavItem = ScrollNavItem | DropdownNavItem;
+
+function isDropdownItem(item: NavItem): item is DropdownNavItem {
+  return "children" in item;
+}
+
+const scrollNavItems: NavItem[] = [
   { label: "Home", id: "home" },
   { label: "About", id: "about" },
-  { label: "Leadership", id: "leadership" },
+      {
+    label: "Leadership",
+    children: [
+      { label: "Three Lights", href: "three-lights", isAnchor: true },
+      { label: "Past Master", href: "/past-masters" },
+    ],
+  },
   { label: "Media", id: "media-center" },
   { label: "eBooks & Souvenirs", disabled: true },
   { label: "Contact", id: "contact" },
@@ -40,13 +57,14 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeItem, setActiveItem] = useState("Home");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const isHomePage = window.location.pathname === "/";
 
   useEffect(() => {
-    const sectionEntries = scrollNavItems.map((item) => ({
-      id: item.id,
-      name: item.label,
-    })).filter((item): item is { id: string; name: string } => Boolean(item.id));
+    const sectionEntries = scrollNavItems
+      .filter((item): item is { label: string; id: string } => !isDropdownItem(item) && !("disabled" in item && item.disabled) && "id" in item && typeof item.id === "string")
+      .map((item) => ({ id: item.id, name: item.label }));
 
     const onScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -68,10 +86,12 @@ export function Navbar() {
       let active = "Home";
 
       for (let i = sectionEntries.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sectionEntries[i].id);
+        const entry = sectionEntries[i];
+        if (!entry) continue;
+        const el = document.getElementById(entry.id);
         if (!el) continue;
         if (el.getBoundingClientRect().top <= navbarHeight) {
-          active = sectionEntries[i].name;
+          active = entry.name;
           break;
         }
       }
@@ -85,11 +105,55 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [isHomePage]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const navLinks = useMemo(
     () => {
       const getHref = (slug: string) => (isHomePage ? `#${slug}` : `/#${slug}`);
 
       return scrollNavItems.map((item) => {
+        if (isDropdownItem(item)) {
+          return (
+            <div
+              className={`nav-dropdown ${dropdownOpen ? "is-open" : ""}`}
+              key={item.label}
+              ref={dropdownRef}
+            >
+              <button
+                className="nav-dropdown-trigger"
+                type="button"
+                onClick={() => setDropdownOpen((open) => !open)}
+              >
+                {item.label}
+                <ChevronDown size={14} strokeWidth={2} />
+              </button>
+              <span className="nav-underline" />
+              <div className="nav-dropdown-menu">
+                {item.children.map((child) => (
+                  <a
+                    key={child.label}
+                    href={child.isAnchor ? getHref(child.href) : child.href}
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    {child.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          );
+        }
+
         if (item.disabled) {
           return (
             <span className="nav-disabled-link" key={item.label} aria-disabled="true">
@@ -116,7 +180,7 @@ export function Navbar() {
         );
       });
     },
-    [activeItem, isHomePage],
+    [activeItem, isHomePage, dropdownOpen],
   );
 
   return (

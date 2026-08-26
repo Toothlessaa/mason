@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import bcrypt from "bcryptjs";
-import { sendFcmPushNotification } from "./firebasePush";
+import { sendExpoPushNotification } from "./expoPush";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -220,7 +220,7 @@ async function notifyAdminsOfApplication(name: string) {
 
   await Promise.all(
     tokens.map((to) =>
-      sendFcmPushNotification(to, "New Membership Application", `${name} applied to join the lodge.`)
+      sendExpoPushNotification(to, "New Membership Application", `${name} applied to join the lodge.`)
     )
   );
 }
@@ -235,7 +235,7 @@ export async function notifyMemberApproved(memberId: string) {
   const row = data as { push_token: string | null; name: string } | null;
   if (!row?.push_token) return;
 
-  await sendFcmPushNotification(
+  await sendExpoPushNotification(
     row.push_token,
     "Membership Approved",
     `Welcome to Mt. Capistrano Masonic Lodge No. 23, ${(row.name ?? "").split(" ")[0]}. Your application has been approved.`
@@ -570,6 +570,144 @@ export async function deleteLeadershipSlide(slide: LeadershipSlide) {
     .from("leadership_slides")
     .delete()
     .eq("id", slide.id);
+
+  return { error };
+}
+
+// --- Past Masters management ---
+
+const PAST_MASTERS_FOLDER = "past-masters";
+
+export type PastMasterStatus = "draft" | "published";
+
+export type PastMaster = {
+  id: string;
+  name: string;
+  title: string | null;
+  year_served: string | null;
+  image_url: string | null;
+  storage_path: string | null;
+  bio: string | null;
+  status: PastMasterStatus;
+  sort_order: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+async function uploadPastMasterImage(file: File) {
+  const storagePath = `${PAST_MASTERS_FOLDER}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${getSafeFileName(file.name)}`;
+  const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(storagePath, file, {
+    cacheControl: "3600",
+    upsert: false,
+  });
+
+  if (error) return { imageUrl: null, storagePath: null, error };
+
+  const { data } = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(storagePath);
+  return { imageUrl: data.publicUrl, storagePath, error: null };
+}
+
+export async function getPublishedPastMasters() {
+  const { data, error } = await supabase
+    .from("past_masters")
+    .select("*")
+    .eq("status", "published")
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  return { data: data as PastMaster[] | null, error };
+}
+
+export async function getAllPastMasters() {
+  const { data, error } = await supabase
+    .from("past_masters")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  return { data: data as PastMaster[] | null, error };
+}
+
+export async function createPastMaster({
+  name,
+  title,
+  yearServed,
+  bio,
+  imageFile,
+  status,
+  createdBy,
+}: {
+  name: string;
+  title?: string;
+  yearServed?: string;
+  bio?: string;
+  imageFile?: File;
+  status: PastMasterStatus;
+  createdBy?: string;
+}) {
+  let imageUrl: string | null = null;
+  let storagePath: string | null = null;
+
+  if (imageFile) {
+    const upload = await uploadPastMasterImage(imageFile);
+    if (upload.error || !upload.imageUrl) {
+      return { data: null, error: upload.error || new Error("Unable to upload image.") };
+    }
+    imageUrl = upload.imageUrl;
+    storagePath = upload.storagePath;
+  }
+
+  const { data, error } = await supabase
+    .from("past_masters")
+    .insert({
+      name,
+      title: title || null,
+      year_served: yearServed || null,
+      bio: bio || null,
+      image_url: imageUrl,
+      storage_path: storagePath,
+      status,
+      created_by: createdBy || null,
+    })
+    .select()
+    .single();
+
+  return { data: data as PastMaster | null, error };
+}
+
+export async function updatePastMasterStatus(pastMasterId: string, status: PastMasterStatus) {
+  const { data, error } = await supabase
+    .from("past_masters")
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq("id", pastMasterId)
+    .select()
+    .single();
+
+  return { data: data as PastMaster | null, error };
+}
+
+export async function updatePastMasterSortOrder(pastMasterId: string, sortOrder: number) {
+  const { data, error } = await supabase
+    .from("past_masters")
+    .update({ sort_order: sortOrder, updated_at: new Date().toISOString() })
+    .eq("id", pastMasterId)
+    .select()
+    .single();
+
+  return { data: data as PastMaster | null, error };
+}
+
+export async function deletePastMaster(pastMaster: PastMaster) {
+  if (pastMaster.storage_path) {
+    const { error: removeError } = await supabase.storage.from(MEDIA_BUCKET).remove([pastMaster.storage_path]);
+    if (removeError) return { error: removeError };
+  }
+
+  const { error } = await supabase
+    .from("past_masters")
+    .delete()
+    .eq("id", pastMaster.id);
 
   return { error };
 }

@@ -34,6 +34,8 @@ jobs:
           if [ -z "$KEY_ALIAS" ]; then echo "::error::Secret ANDROID_KEY_ALIAS is missing or empty."; exit 1; fi
           if [ -z "$SUPABASE_URL" ]; then echo "::error::Secret EXPO_PUBLIC_SUPABASE_URL is missing or empty."; exit 1; fi
           if [ -z "$SUPABASE_KEY" ]; then echo "::error::Secret EXPO_PUBLIC_SUPABASE_ANON_KEY is missing or empty."; exit 1; fi
+          if [ -z "$API_URL" ]; then echo "::error::Secret EXPO_PUBLIC_API_URL is missing or empty."; exit 1; fi
+          if [ -z "$EXPO_PROJECT_ID" ]; then echo "::error::Secret EXPO_PUBLIC_EXPO_PROJECT_ID is missing or empty."; exit 1; fi
           if [ -z "$GOOGLE_SERVICES" ]; then echo "::error::Secret GOOGLE_SERVICES_JSON_B64 is missing or empty."; exit 1; fi
         env:
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
@@ -42,6 +44,8 @@ jobs:
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+          API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
+          EXPO_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_EXPO_PROJECT_ID }}
           GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES_JSON_B64 }}
 
       - name: Install dependencies
@@ -63,6 +67,8 @@ jobs:
           CI: '1'
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
+          EXPO_PUBLIC_EXPO_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_EXPO_PROJECT_ID }}
 
       - name: Install signing keystore and patch build.gradle
         working-directory: mobile
@@ -81,6 +87,8 @@ jobs:
         env:
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
+          EXPO_PUBLIC_EXPO_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_EXPO_PROJECT_ID }}
           ORG_GRADLE_PROJECT_MYAPP_UPLOAD_STORE_FILE: masonic-upload.keystore
           ORG_GRADLE_PROJECT_MYAPP_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
           ORG_GRADLE_PROJECT_MYAPP_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}

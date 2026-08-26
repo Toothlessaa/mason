@@ -1,65 +1,15 @@
 import * as Notifications from "expo-notifications";
-import { KJUR, KEYUTIL } from "jsrsasign";
+import Constants from "expo-constants";
 import { Platform } from "react-native";
-import serviceAccount from "./firebase-service-account.json";
 import { registerPushToken } from "./memberPortal";
 
 const CHANNEL_ID = "lodge";
-const FCM_SCOPE = "https://www.googleapis.com/auth/firebase.messaging";
+const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "");
 
-const service = serviceAccount as {
-  project_id: string;
-  client_email: string;
-  private_key: string;
-  token_uri: string;
-};
-
-const FCM_URL = `https://fcm.googleapis.com/v1/projects/${service.project_id}/messages:send`;
-
-let cachedAccessToken: string | null = null;
-let cachedTokenExpiry = 0;
-
-async function getFcmAccessToken() {
-  const now = Math.floor(Date.now() / 1000);
-  if (cachedAccessToken && now < cachedTokenExpiry) return cachedAccessToken;
-
-  try {
-    const header = { alg: "RS256", typ: "JWT" };
-    const claims = {
-      iss: service.client_email,
-      scope: FCM_SCOPE,
-      aud: service.token_uri,
-      iat: now,
-      exp: now + 3600,
-    };
-    const jwt = KJUR.jws.JWS.sign(
-      "RS256",
-      header,
-      JSON.stringify(claims),
-      KEYUTIL.getKey(service.private_key) as Parameters<typeof KJUR.jws.JWS.sign>[3]
-    );
-
-    const body = new URLSearchParams();
-    body.append("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer");
-    body.append("assertion", jwt);
-
-    const response = await fetch(service.token_uri, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
-    });
-    if (!response.ok) return null;
-
-    const tokenResponse = (await response.json()) as { access_token?: string; expires_in?: number };
-    if (!tokenResponse.access_token) return null;
-
-    cachedAccessToken = tokenResponse.access_token;
-    cachedTokenExpiry = now + (tokenResponse.expires_in ?? 3600) - 60;
-    return cachedAccessToken;
-  } catch {
-    return null;
-  }
-}
+const projectId =
+  process.env.EXPO_PUBLIC_EXPO_PROJECT_ID ??
+  Constants.expoConfig?.extra?.eas?.projectId ??
+  Constants.easConfig?.projectId;
 
 export function isPushSupported() {
   return Platform.OS !== "web";
@@ -100,18 +50,10 @@ export async function registerForPushNotificationsAsync(): Promise<{ token: stri
       return { token: null, error: `Permission not granted (${finalStatus})` };
     }
 
-    const deviceToken = await Notifications.getDevicePushTokenAsync();
-    if (Platform.OS === "android") {
-      if (deviceToken.type !== "android" && deviceToken.type !== "fcm") {
-        return { token: null, error: `Unexpected device token type: ${String(deviceToken.type)}` };
-      }
-    } else if (deviceToken.type !== "ios") {
-      return { token: null, error: `Unexpected device token type: ${String(deviceToken.type)}` };
-    }
-    if (typeof deviceToken.data !== "string") {
-      return { token: null, error: `Unexpected device token data: ${JSON.stringify(deviceToken.data)}` };
-    }
-    return { token: deviceToken.data, error: null };
+    if (!projectId) return { token: null, error: "Missing Expo project ID. Set EXPO_PUBLIC_EXPO_PROJECT_ID in the mobile build environment." };
+
+    const expoToken = await Notifications.getExpoPushTokenAsync({ projectId });
+    return { token: expoToken.data, error: null };
   } catch (e) {
     return { token: null, error: e instanceof Error ? e.message : String(e) };
   }
@@ -159,33 +101,20 @@ export async function registerPushForMember(member: { id: string }): Promise<Pus
 
 export async function sendPush(token: string, message: PushMessage) {
   try {
-    const accessToken = await getFcmAccessToken();
-    if (!accessToken) return false;
+    const endpoint = apiBaseUrl ? `${apiBaseUrl}/api/send-push` : null;
+    if (!endpoint) return false;
 
-    const notification: Record<string, string> = { title: message.title };
-    if (message.body) notification.body = message.body;
-
-    const response = await fetch(FCM_URL, {
+    const response = await fetch(endpoint, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        message: {
-          token,
-          notification,
-          android: {
-            notification: {
-              channel_id: CHANNEL_ID,
-              sound: "default",
-              color: "#e2c47a",
-            },
-          },
-        },
+        token,
+        title: message.title,
+        body: message.body,
       }),
     });
-    return response.ok;
+    const result = (await response.json().catch(() => null)) as { ok?: boolean } | null;
+    return response.ok && result?.ok === true;
   } catch {
     return false;
   }

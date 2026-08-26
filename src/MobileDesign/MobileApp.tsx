@@ -6,6 +6,7 @@ import { MobileMembersPage } from "./MobileMembersPage";
 import { MobileAdminLoginPage } from "./MobileAdminLoginPage";
 import { MobileAdminPage } from "./MobileAdminPage";
 import { MobileMembershipInquiryPage } from "./MobileMembershipInquiryPage";
+import { MobilePastMastersPage } from "./MobilePastMastersPage";
 import { MobilePendingApprovalPage } from "./MobilePendingApprovalPage";
 import { MobileNavbar } from "./MobileNavbar";
 import { MobileThankYouPage } from "./MobileThankYouPage";
@@ -22,6 +23,7 @@ export function MobileApp() {
   const isPendingApprovalPage = path === "/pending-approval";
   const isAdminLoginPage = path === "/admin-login";
   const isAdminPage = path === "/admin";
+  const isPastMastersPage = path === "/past-masters";
 
   const hideNavbar = isThankYouPage || isBeAFreemasonPage || isMemberLoginPage || isMembersPage || isPendingApprovalPage || isAdminLoginPage || isAdminPage;
 
@@ -29,7 +31,7 @@ export function MobileApp() {
     <div className="md-app">
       {!hideNavbar ? <MobileNavbar /> : null}
       <main>
-        {isBecomeMemberPage ? <MobileBecomeMemberPage /> : isMembershipEnquiryPage ? <MobileMembershipInquiryPage /> : isBeAFreemasonPage ? <MobileBeAFreemasonPage /> : isMemberLoginPage ? <MobileMemberLoginPage /> : isMembersPage ? <MobileMembersPage /> : isAdminLoginPage ? <MobileAdminLoginPage /> : isAdminPage ? <MobileAdminPage /> : isPendingApprovalPage ? <MobilePendingApprovalPage /> : isThankYouPage ? <MobileThankYouPage /> : <MobileHome />}
+        {isBecomeMemberPage ? <MobileBecomeMemberPage /> : isMembershipEnquiryPage ? <MobileMembershipInquiryPage /> : isBeAFreemasonPage ? <MobileBeAFreemasonPage /> : isMemberLoginPage ? <MobileMemberLoginPage /> : isMembersPage ? <MobileMembersPage /> : isAdminLoginPage ? <MobileAdminLoginPage /> : isAdminPage ? <MobileAdminPage /> : isPendingApprovalPage ? <MobilePendingApprovalPage /> : isThankYouPage ? <MobileThankYouPage /> : isPastMastersPage ? <MobilePastMastersPage /> : <MobileHome />}
       </main>
     </div>
   );

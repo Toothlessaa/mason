@@ -6,6 +6,7 @@ import { MembersPage } from "./components/MembersPage";
 import { AdminLoginPage } from "./components/AdminLoginPage";
 import { AdminPage } from "./components/AdminPage";
 import { MembershipInquiryPage } from "./components/MembershipInquiryPage";
+import { PastMastersPage } from "./components/PastMastersPage";
 import { Navbar } from "./components/Navbar";
 import { PendingApprovalPage } from "./components/PendingApprovalPage";
 import { ThankYouPage } from "./components/ThankYouPage";
@@ -23,6 +24,7 @@ export default function App() {
   const isPendingApprovalPage = window.location.pathname === "/pending-approval";
   const isAdminLoginPage = window.location.pathname === "/admin-login";
   const isAdminPage = window.location.pathname === "/admin";
+  const isPastMastersPage = window.location.pathname === "/past-masters";
 
   if (isMobileDesign) {
     return <MobileApp />;
@@ -34,7 +36,7 @@ export default function App() {
     <div className="app-shell">
       {!hideNavbar ? <Navbar /> : null}
       <main>
-        {isBecomeMemberPage ? <BecomeMemberPage /> : isMembershipEnquiryPage ? <MembershipInquiryPage /> : isBeAFreemasonPage ? <BeAFreemasonPage /> : isMemberLoginPage ? <MemberLoginPage /> : isMembersPage ? <MembersPage /> : isAdminLoginPage ? <AdminLoginPage /> : isAdminPage ? <AdminPage /> : isPendingApprovalPage ? <PendingApprovalPage /> : isThankYouPage ? <ThankYouPage /> : <Hero />}
+        {isBecomeMemberPage ? <BecomeMemberPage /> : isMembershipEnquiryPage ? <MembershipInquiryPage /> : isBeAFreemasonPage ? <BeAFreemasonPage /> : isMemberLoginPage ? <MemberLoginPage /> : isMembersPage ? <MembersPage /> : isAdminLoginPage ? <AdminLoginPage /> : isAdminPage ? <AdminPage /> : isPendingApprovalPage ? <PendingApprovalPage /> : isThankYouPage ? <ThankYouPage /> : isPastMastersPage ? <PastMastersPage /> : <Hero />}
       </main>
     </div>
   );

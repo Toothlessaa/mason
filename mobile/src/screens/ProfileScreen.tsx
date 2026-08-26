@@ -107,16 +107,16 @@ export function ProfileScreen() {
       Alert.alert("Not registered", result.error || "Allow notifications first.");
       return;
     }
-    setPushDetail("Sending test push via FCM...");
+    setPushDetail("Sending test push via Expo...");
     const ok = await sendPush(result.token, {
       title: "Test Push",
       body: "Mt. Capistrano Masonic Lodge No. 23 — push is working!",
     });
     setPushTesting(false);
-    setPushDetail(ok ? "FCM accepted the message." : "FCM rejected the message.");
+    setPushDetail(ok ? "Expo accepted the message." : "Expo rejected the message.");
     Alert.alert(
       ok ? "Test push sent" : "Test push failed",
-      ok ? "Check your notification shade." : "FCM rejected the message. Report this to support."
+      ok ? "Check your notification shade." : "Expo rejected the message. Check the server configuration."
     );
   };
 

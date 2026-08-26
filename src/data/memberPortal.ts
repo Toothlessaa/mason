@@ -2,6 +2,7 @@ export { supabase } from "../lib/supabase";
 export type { MemberProfile } from "../lib/supabase";
 export type { MediaPost, MediaPostStatus } from "../lib/supabase";
 export type { LeadershipSlide, LeadershipSlideStatus } from "../lib/supabase";
+export type { PastMaster, PastMasterStatus } from "../lib/supabase";
 export {
   signIn,
   adminSignIn,
@@ -29,4 +30,10 @@ export {
   updateLeadershipSlideStatus,
   updateLeadershipSlideSortOrder,
   deleteLeadershipSlide,
+  getPublishedPastMasters,
+  getAllPastMasters,
+  createPastMaster,
+  updatePastMasterStatus,
+  updatePastMasterSortOrder,
+  deletePastMaster,
 } from "../lib/supabase";

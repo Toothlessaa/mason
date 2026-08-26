@@ -80,6 +80,7 @@ export function ThreeLights() {
   return (
     <section
       ref={sectionRef}
+      id="three-lights"
       className="three-lights-section"
     >
       <div className="three-lights-heading">

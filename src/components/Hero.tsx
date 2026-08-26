@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { AnthemSection } from "./AnthemSection";
@@ -23,6 +24,15 @@ const placeholderSections = [
 
 export function Hero() {
   const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash) return;
+    const id = hash.slice(1);
+    requestAnimationFrame(() => {
+      document.getElementById(id)?.scrollIntoView();
+    });
+  }, []);
 
   return (
     <>
