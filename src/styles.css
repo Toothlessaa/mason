@@ -2239,6 +2239,21 @@ a.footer-contact-card:focus-visible {
   margin: 0;
 }
 
+.footer-credit-link {
+  color: var(--gold-300);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(226, 196, 122, 0.5);
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.footer-credit-link:hover,
+.footer-credit-link:focus-visible {
+  color: #f3dfb2;
+  text-decoration-color: #f3dfb2;
+}
+
 .become-member-page {
   position: relative;
   z-index: 1;
@@ -2285,6 +2300,11 @@ a.footer-contact-card:focus-visible {
   font-size: clamp(2.7rem, 7vw, 5rem);
   line-height: 0.95;
   letter-spacing: -0.04em;
+}
+
+.past-masters-hero {
+  padding-top: 76px;
+  min-height: 500px;
 }
 
 .become-member-intro {

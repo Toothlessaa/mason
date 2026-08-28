@@ -25,7 +25,7 @@ const scrollLinks: NavLink[] = [
     label: "Leadership",
     children: [
       { label: "Three Lights", href: "/#three-lights" },
-      { label: "Past Master", href: "/past-masters" },
+      { label: "Past Masters", href: "/past-masters" },
     ],
   },
   { label: "Media", href: "/#media-center" },

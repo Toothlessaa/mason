@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, Crown } from "lucide-react";
-import lodgeLogo from "../../logo1.jpg";
-import districtLogo from "../../logo.jpeg";
 import { getPublishedPastMasters, type PastMaster } from "../data/memberPortal";
 
 export function MobilePastMastersPage() {
@@ -20,11 +18,7 @@ export function MobilePastMastersPage() {
   return (
     <section className="md-light-page">
       <a className="md-back-link" href="/"><ArrowLeft size={17} /> Home</a>
-      <div className="md-light-hero">
-        <div className="md-light-logos">
-          <img src={districtLogo} alt="District Grand Lodge of the Far East" />
-          <img src={lodgeLogo} alt="Mt. Capistrano Masonic Lodge No. 23" />
-        </div>
+      <div className="md-light-hero past-masters-hero">
         <h1>Past Masters</h1>
       </div>
 

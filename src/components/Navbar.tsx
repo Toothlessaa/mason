@@ -27,7 +27,7 @@ const scrollNavItems: NavItem[] = [
     label: "Leadership",
     children: [
       { label: "Three Lights", href: "three-lights", isAnchor: true },
-      { label: "Past Master", href: "/past-masters" },
+      { label: "Past Masters", href: "/past-masters" },
     ],
   },
   { label: "Media", id: "media-center" },

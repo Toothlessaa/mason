@@ -76,7 +76,7 @@ export function MobileHome() {
         <a href="mailto:admin@mcml23.com">Email the Lodge</a>
         <a href="/become-a-member">Become a Member</a>
         <p>@2026 Mt. Capistrano Masonic Lodge No. 23. All Rights Reserved.</p>
-        <p>Crafted by Bro. Noel Blanco - I</p>
+        <p>Crafted by <a className="footer-credit-link" href="https://anwartechlabs.com" target="_blank" rel="noreferrer">Anwartechlabs</a></p>
       </footer>
     </>
   );

@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Crown, User } from "lucide-react";
-import lodgeLogo from "../../logo1.jpg";
-import districtLogo from "../../logo.jpeg";
 import { getPublishedPastMasters, type PastMaster } from "../data/memberPortal";
 
 export function PastMastersPage() {
@@ -21,12 +19,8 @@ export function PastMastersPage() {
 
   return (
     <section className="become-member-page">
-      <div className="become-member-hero">
+      <div className="become-member-hero past-masters-hero">
         <div className="become-member-hero-inner">
-          <div className="become-member-logos" aria-label="Lodge logos">
-            <img src={districtLogo} alt="District Grand Lodge of the Far East" />
-            <img src={lodgeLogo} alt="Mt. Capistrano Masonic Lodge No. 23" />
-          </div>
           <motion.h1 initial={reduceMotion ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             Past Masters
           </motion.h1>
