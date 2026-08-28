@@ -2240,18 +2240,18 @@ a.footer-contact-card:focus-visible {
 }
 
 .footer-credit-link {
-  color: var(--gold-300);
+  color: #e3b341;
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 2px;
-  text-decoration-color: rgba(226, 196, 122, 0.5);
+  text-decoration-color: rgba(227, 179, 65, 0.5);
   transition: color 0.2s ease, text-decoration-color 0.2s ease;
 }
 
 .footer-credit-link:hover,
 .footer-credit-link:focus-visible {
-  color: #f3dfb2;
-  text-decoration-color: #f3dfb2;
+  color: #f2d07d;
+  text-decoration-color: #f2d07d;
 }
 
 .become-member-page {
